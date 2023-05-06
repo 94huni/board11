@@ -2,12 +2,17 @@ package com.board.board.Service;
 
 import com.board.board.Config.Jwt.JwtProvider;
 import com.board.board.DTO.UserDTO;
+import com.board.board.DTO.UserSearchFormDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
 import com.board.board.Entity.User;
 import com.board.board.Entity.UserRole;
 import com.board.board.Exception.CustomException;
 import com.board.board.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -60,9 +65,9 @@ public class UserService {
 
 
     //회원정보 조회
-    public UserDTO getUser(Long id){
-        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException("회원정보가없습니다!"));
-        UserDTO userDTO = new UserDTO();
+    public UserSearchFormDTO getUser(String username){
+        User user = userRepository.findByUsername(username);
+        UserSearchFormDTO userDTO = new UserSearchFormDTO();
         userDTO.setUsername(user.getUsername());
         userDTO.setNickname(user.getNickname());
         userDTO.setUserRoles(user.getUserRoles());
@@ -73,6 +78,7 @@ public class UserService {
 
         return userDTO;
     }
+
 
     //전체 회원 조회
     public List<UserDTO> getAllUser(){
@@ -90,6 +96,26 @@ public class UserService {
             userDTOS.add(userDTO);
         }
         return userDTOS;
+    }
+
+    public Page<UserDTO> getAllUserPage(int page, int size, String search){
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<User> userPage = userRepository.findUserByUsernameContaining(search, pageable);
+        Page<UserDTO> userDTOPage = userPage.map(user -> {
+            UserDTO userDto = new UserDTO();
+            userDto.setUsername(user.getUsername());
+            userDto.setEmail(user.getEmail());
+            userDto.setNickname(user.getNickname());
+            userDto.setCreateAt(user.getCreateAt());
+            userDto.setUserRoles(user.getUserRoles());
+            return userDto;
+        });
+        return userDTOPage;
+    }
+
+    public boolean deleteUser(Long id){
+        userRepository.deleteById(id);
+        return true;
     }
 
 }

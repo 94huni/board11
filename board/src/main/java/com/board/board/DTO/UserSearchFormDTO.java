@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@NoArgsConstructor
 @Data
-public class UserDTO {
+@NoArgsConstructor
+public class UserSearchFormDTO {
     private String username;
 
     private String email;
@@ -22,4 +22,7 @@ public class UserDTO {
 
     private List<UserRole> userRoles;
 
+    private List<Board> boardList;
+
+    private List<Comment> commentList;
 }

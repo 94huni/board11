@@ -37,9 +37,9 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     List<UserRole> userRoles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Board> boardList;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> commentList;
 }
