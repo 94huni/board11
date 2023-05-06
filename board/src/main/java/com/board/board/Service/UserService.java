@@ -65,6 +65,20 @@ public class UserService {
         return jwtProvider.createToken(user.getUsername(), user.getUserRoles());
     }
 
+    //jwt 사용자 정보
+    public UserDTO getCurrent(String token){
+        String username = jwtProvider.getUsername(token);
+        User user = userRepository.findByUsername(username);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setNickname(user.getNickname());
+        userDTO.setCreateAt(user.getCreateAt());
+        userDTO.setUserRoles(user.getUserRoles());
+        return userDTO;
+    }
+
+
 
     //회원정보 조회
     public UserSearchFormDTO getUser(Long id){
@@ -81,6 +95,7 @@ public class UserService {
         return userDTO;
     }
 
+    //정보수정
     public UserDTO updateUser(UserUpdateFormDTO userUpdateFormDTO, Long id){
         User user = userRepository.findById(id).orElseThrow(()->new RuntimeException("회원정보를 찾을수없습니다."));
         if(userUpdateFormDTO.getPassword() != null){

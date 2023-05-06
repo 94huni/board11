@@ -29,6 +29,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.signUp(userSignUpFormDTO));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getCurrentUser(@RequestHeader("Authorization")String token){
+        return ResponseEntity.ok(userService.getCurrent(token));
+    }
+
     @GetMapping("/get/{user_id}")
     public ResponseEntity<UserSearchFormDTO> getUser(@PathVariable Long user_id){
         return ResponseEntity.ok(userService.getUser(user_id));
