@@ -3,6 +3,7 @@ package com.board.board.Entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -26,10 +27,16 @@ public class Board {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createAt;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<Category> category;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Comment> commentList;
+
+    @Transient
+    private MultipartFile image;
 }

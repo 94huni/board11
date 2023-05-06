@@ -82,7 +82,7 @@ public class UserService {
 
     //회원정보 조회
     public UserSearchFormDTO getUser(Long id){
-        User user = userRepository.findById(id).orElseThrow(()->new EntityNotFoundException("정보를찾을수없습니다."));
+        User user = userRepository.findById(id).orElseThrow(()->new CustomException("정보를 찾을수 없습니다!", HttpStatus.NOT_FOUND));
 
         UserSearchFormDTO userDTO = new UserSearchFormDTO();
         userDTO.setUsername(user.getUsername());
@@ -97,7 +97,7 @@ public class UserService {
 
     //정보수정
     public UserDTO updateUser(UserUpdateFormDTO userUpdateFormDTO, Long id){
-        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException("회원정보를 찾을수없습니다."));
+        User user = userRepository.findById(id).orElseThrow(()->new CustomException("회원정보를 찾을수 없습니다!", HttpStatus.NOT_FOUND));
         if(userUpdateFormDTO.getPassword() != null){
             if(userUpdateFormDTO.getPassword().equals(userUpdateFormDTO.getPassword2())){
                 user.setPassword(bCryptPasswordEncoder.encode(userUpdateFormDTO.getPassword()));
