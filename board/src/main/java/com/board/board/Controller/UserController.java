@@ -3,6 +3,7 @@ package com.board.board.Controller;
 import com.board.board.DTO.UserDTO;
 import com.board.board.DTO.UserSearchFormDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
+import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,9 +29,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.signUp(userSignUpFormDTO));
     }
 
-    @GetMapping("/get/{username}")
-    public ResponseEntity<UserSearchFormDTO> getUser(@PathVariable String username){
-        return ResponseEntity.ok(userService.getUser(username));
+    @GetMapping("/get/{user_id}")
+    public ResponseEntity<UserSearchFormDTO> getUser(@PathVariable Long user_id){
+        return ResponseEntity.ok(userService.getUser(user_id));
     }
 
     @GetMapping("/admin/getAllUser")
@@ -43,6 +44,11 @@ public class UserController {
                                                         @RequestParam(defaultValue = "10") int size,
                                                         @RequestParam(defaultValue = "") String search){
         return ResponseEntity.ok(userService.getAllUserPage(page, size, search));
+    }
+
+    @PutMapping("/update/{user_id}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, UserUpdateFormDTO userUpdateFormDTO){
+        return ResponseEntity.ok(userService.updateUser(userUpdateFormDTO, id));
     }
 
     @DeleteMapping("/delete/{user_id}")

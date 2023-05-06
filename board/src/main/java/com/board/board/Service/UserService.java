@@ -4,6 +4,7 @@ import com.board.board.Config.Jwt.JwtProvider;
 import com.board.board.DTO.UserDTO;
 import com.board.board.DTO.UserSearchFormDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
+import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Entity.User;
 import com.board.board.Entity.UserRole;
 import com.board.board.Exception.CustomException;
@@ -20,6 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,8 +67,9 @@ public class UserService {
 
 
     //회원정보 조회
-    public UserSearchFormDTO getUser(String username){
-        User user = userRepository.findByUsername(username);
+    public UserSearchFormDTO getUser(Long id){
+        User user = userRepository.findById(id).orElseThrow(()->new EntityNotFoundException("정보를찾을수없습니다."));
+
         UserSearchFormDTO userDTO = new UserSearchFormDTO();
         userDTO.setUsername(user.getUsername());
         userDTO.setNickname(user.getNickname());
@@ -75,7 +78,31 @@ public class UserService {
         userDTO.setCreateAt(user.getCreateAt());
         userDTO.setBoardList(user.getBoardList());
         userDTO.setCommentList(user.getCommentList());
+        return userDTO;
+    }
 
+    public UserDTO updateUser(UserUpdateFormDTO userUpdateFormDTO, Long id){
+        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException("회원정보를 찾을수없습니다."));
+        if(userUpdateFormDTO.getPassword() != null){
+            if(userUpdateFormDTO.getPassword().equals(userUpdateFormDTO.getPassword2())){
+                user.setPassword(bCryptPasswordEncoder.encode(userUpdateFormDTO.getPassword()));
+                user.setEmail(userUpdateFormDTO.getEmail());
+                user.setNickname(user.getNickname());
+                userRepository.save(user);
+            }else {
+                throw new RuntimeException("비밀번호가 다릅니다.");
+            }
+        }else {
+            user.setNickname(userUpdateFormDTO.getNickname());
+            user.setEmail(userUpdateFormDTO.getEmail());
+            userRepository.save(user);
+        }
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setNickname(user.getNickname());
+        userDTO.setCreateAt(user.getCreateAt());
+        userDTO.setUserRoles(user.getUserRoles());
         return userDTO;
     }
 
