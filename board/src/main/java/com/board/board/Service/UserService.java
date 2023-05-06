@@ -49,7 +49,7 @@ public class UserService {
         }
         User user = new User();
         user.setUsername(userSignUpFormDTO.getUsername());
-        user.setPassword(userSignUpFormDTO.getPassword());
+        user.setPassword(bCryptPasswordEncoder.encode(userSignUpFormDTO.getPassword()));
         user.setEmail(userSignUpFormDTO.getEmail());
         user.setNickname(userSignUpFormDTO.getNickname());
         user.setCreateAt(LocalDateTime.now());
@@ -68,6 +68,8 @@ public class UserService {
         userDTO.setUserRoles(user.getUserRoles());
         userDTO.setEmail(user.getEmail());
         userDTO.setCreateAt(user.getCreateAt());
+        userDTO.setBoardList(user.getBoardList());
+        userDTO.setCommentList(user.getCommentList());
 
         return userDTO;
     }

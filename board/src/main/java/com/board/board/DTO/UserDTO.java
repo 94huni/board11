@@ -1,5 +1,7 @@
 package com.board.board.DTO;
 
+import com.board.board.Entity.Board;
+import com.board.board.Entity.Comment;
 import com.board.board.Entity.UserRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +20,9 @@ public class UserDTO {
 
     private LocalDateTime createAt;
 
-    List<UserRole> userRoles;
+    private List<UserRole> userRoles;
+
+    private List<Board> boardList;
+
+    private List<Comment> commentList;
 }
