@@ -1,7 +1,7 @@
 package com.board.board.Controller;
 
 import com.board.board.DTO.UserDTO;
-import com.board.board.DTO.UserSearchFormDTO;
+import com.board.board.DTO.UserResponseDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
 import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Service.UserService;
@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,14 +21,18 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/signin")
-    public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.signIn(username, password));
+    @PostMapping("/sign-in")
+    public ResponseEntity<Map<String, String>> login(@RequestParam String username, @RequestParam String password){
+        Map<String, String> response = new HashMap<>();
+        response.put("token", userService.signIn(username, password));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody UserSignUpFormDTO userSignUpFormDTO){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.signUp(userSignUpFormDTO));
+    @PostMapping("/sign-up")
+    public ResponseEntity<Map<String, String>> signUp(@RequestBody UserSignUpFormDTO userSignUpFormDTO){
+        Map<String, String> response = new HashMap<>();
+        response.put("token",userService.signUp(userSignUpFormDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/me")
@@ -35,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/get/{user_id}")
-    public ResponseEntity<UserSearchFormDTO> getUser(@PathVariable Long user_id){
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long user_id){
         return ResponseEntity.ok(userService.getUser(user_id));
     }
 

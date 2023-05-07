@@ -47,7 +47,7 @@ public class BoardService {
         boardDTO.setContent(board.getContent());
         boardDTO.setCreateAt(board.getCreateAt());
         boardDTO.setCategory(board.getCategory().toString());
-        boardDTO.setComments(board.getCommentList());
+        boardDTO.setComment_count(board.getCommentList().size());
         return boardDTO;
     }
 }

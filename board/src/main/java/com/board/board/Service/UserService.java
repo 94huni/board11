@@ -2,7 +2,7 @@ package com.board.board.Service;
 
 import com.board.board.Config.Jwt.JwtProvider;
 import com.board.board.DTO.UserDTO;
-import com.board.board.DTO.UserSearchFormDTO;
+import com.board.board.DTO.UserResponseDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
 import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Entity.User;
@@ -21,7 +21,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,10 +80,10 @@ public class UserService {
 
 
     //회원정보 조회
-    public UserSearchFormDTO getUser(Long id){
+    public UserResponseDTO getUser(Long id){
         User user = userRepository.findById(id).orElseThrow(()->new CustomException("정보를 찾을수 없습니다!", HttpStatus.NOT_FOUND));
 
-        UserSearchFormDTO userDTO = new UserSearchFormDTO();
+        UserResponseDTO userDTO = new UserResponseDTO();
         userDTO.setUsername(user.getUsername());
         userDTO.setNickname(user.getNickname());
         userDTO.setUserRoles(user.getUserRoles());

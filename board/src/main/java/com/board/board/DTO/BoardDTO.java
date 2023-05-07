@@ -15,5 +15,5 @@ public class BoardDTO {
     private String nickname;
     private String category;
     private LocalDateTime createAt;
-    private List<Comment> comments;
+    private int comment_count;
 }

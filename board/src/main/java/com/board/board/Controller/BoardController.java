@@ -35,6 +35,7 @@ public class BoardController {
     //글조회
     @GetMapping("/get/{board_id}")
     public ResponseEntity<BoardDTO> getBoard(@PathVariable Long board_id){
-        return ResponseEntity.ok(boardService.getBoard(board_id));
+        BoardDTO boardDTO = boardService.getBoard(board_id);
+        return ResponseEntity.ok(boardDTO);
     }
 }
