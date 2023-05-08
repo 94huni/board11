@@ -16,5 +16,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     void deleteByUsername(String username);
 
-    Page<User> findUserByUsernameContaining(String search, Pageable pageable);
+    Page<User> findByUsernameContaining(String search, Pageable pageable);
 }

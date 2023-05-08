@@ -2,7 +2,6 @@ package com.board.board.Service;
 
 import com.board.board.Config.Jwt.JwtProvider;
 import com.board.board.DTO.UserDTO;
-import com.board.board.DTO.UserResponseDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
 import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Entity.User;
@@ -18,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -74,29 +74,44 @@ public class UserService {
         userDTO.setNickname(user.getNickname());
         userDTO.setCreateAt(user.getCreateAt());
         userDTO.setUserRoles(user.getUserRoles());
+        userDTO.setBoard_count(user.getBoardList().size());
+        userDTO.setComment_count(user.getCommentList().size());
         return userDTO;
     }
 
 
 
     //회원정보 조회
-    public UserResponseDTO getUser(Long id){
+    public UserDTO getUser(Long id){
         User user = userRepository.findById(id).orElseThrow(()->new CustomException("정보를 찾을수 없습니다!", HttpStatus.NOT_FOUND));
 
-        UserResponseDTO userDTO = new UserResponseDTO();
+        UserDTO userDTO = new UserDTO();
         userDTO.setUsername(user.getUsername());
         userDTO.setNickname(user.getNickname());
         userDTO.setUserRoles(user.getUserRoles());
         userDTO.setEmail(user.getEmail());
         userDTO.setCreateAt(user.getCreateAt());
-        userDTO.setBoardList(user.getBoardList());
-        userDTO.setCommentList(user.getCommentList());
+        userDTO.setBoard_count(user.getBoardList().size());
+        userDTO.setComment_count(user.getCommentList().size());
         return userDTO;
     }
 
     //정보수정
-    public UserDTO updateUser(UserUpdateFormDTO userUpdateFormDTO, Long id){
-        User user = userRepository.findById(id).orElseThrow(()->new CustomException("회원정보를 찾을수 없습니다!", HttpStatus.NOT_FOUND));
+    public UserDTO updateUser(UserUpdateFormDTO userUpdateFormDTO, String token){
+        if(!jwtProvider.validateToken(token)){
+            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
+        String username = jwtProvider.getUsername(token);
+        String currentUser = ((UserDetails) jwtProvider.getAuthentication(token).getPrincipal()).getUsername();
+
+        if(!currentUser.equals(username)){
+            throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = userRepository.findByUsername(username);
+
+
         if(userUpdateFormDTO.getPassword() != null){
             if(userUpdateFormDTO.getPassword().equals(userUpdateFormDTO.getPassword2())){
                 user.setPassword(bCryptPasswordEncoder.encode(userUpdateFormDTO.getPassword()));
@@ -134,6 +149,8 @@ public class UserService {
             userDTO.setEmail(user.getEmail());
             userDTO.setUserRoles(user.getUserRoles());
             userDTO.setCreateAt(user.getCreateAt());
+            userDTO.setBoard_count(user.getBoardList().size());
+            userDTO.setComment_count(user.getCommentList().size());
             userDTOS.add(userDTO);
         }
         return userDTOS;
@@ -141,7 +158,7 @@ public class UserService {
 
     public Page<UserDTO> getAllUserPage(int page, int size, String search){
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<User> userPage = userRepository.findUserByUsernameContaining(search, pageable);
+        Page<User> userPage = userRepository.findByUsernameContaining(search, pageable);
         Page<UserDTO> userDTOPage = userPage.map(user -> {
             UserDTO userDto = new UserDTO();
             userDto.setUsername(user.getUsername());
@@ -149,6 +166,8 @@ public class UserService {
             userDto.setNickname(user.getNickname());
             userDto.setCreateAt(user.getCreateAt());
             userDto.setUserRoles(user.getUserRoles());
+            userDto.setBoard_count(user.getBoardList().size());
+            userDto.setComment_count(user.getCommentList().size());
             return userDto;
         });
         return userDTOPage;

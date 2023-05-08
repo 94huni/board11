@@ -1,6 +1,6 @@
 package com.board.board.DTO;
 
-import com.board.board.Entity.Comment;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +13,7 @@ public class BoardDTO {
     private String title;
     private String content;
     private String nickname;
-    private String category;
+    private List<String> category;
     private LocalDateTime createAt;
     private int comment_count;
 }

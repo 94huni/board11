@@ -1,7 +1,6 @@
 package com.board.board.Controller;
 
 import com.board.board.DTO.UserDTO;
-import com.board.board.DTO.UserResponseDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
 import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Service.UserService;
@@ -41,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/get/{user_id}")
-    public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long user_id){
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long user_id){
         return ResponseEntity.ok(userService.getUser(user_id));
     }
 
@@ -57,12 +56,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUserPage(page, size, search));
     }
 
-    @PutMapping("/update/{user_id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, UserUpdateFormDTO userUpdateFormDTO){
-        return ResponseEntity.ok(userService.updateUser(userUpdateFormDTO, id));
+    @PutMapping("/update")
+    public ResponseEntity<UserDTO> updateUser(@RequestHeader("Authorization")String token, UserUpdateFormDTO userUpdateFormDTO){
+        return ResponseEntity.ok(userService.updateUser(userUpdateFormDTO, token));
     }
 
-    @DeleteMapping("/delete/{user_id}")
+    @DeleteMapping("/delete")
     public ResponseEntity<Void> deleteUser(@PathVariable Long user_id){
         boolean isDelete = userService.deleteUser(user_id);
         if(isDelete){

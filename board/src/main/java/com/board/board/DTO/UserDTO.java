@@ -22,4 +22,8 @@ public class UserDTO {
 
     private List<UserRole> userRoles;
 
+    private int board_count;
+
+    private int comment_count;
+
 }
