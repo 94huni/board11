@@ -1,11 +1,11 @@
 # board project
 - 간단한 게시판 서비스입니다.
 - 서비스를 사용하여 사용자는 게시글 작성, 정보보기, 수정, 삭제 할 수 있습니다.
-- 
-<details>
-<summary>
-##  기술 스택
 
+
+ ## 기술 스택
+<details>
+<summary></summary>
 - Backend : 
  - Java 11 : 사용된 버전
  - Spring Boot : 자바 기반의 웹 애플리케이션 개발을 위한 프레임워크
@@ -24,7 +24,6 @@
 
 -  Database : 
  - MariaDB : MySQL 데이터베이스의 포크버전, 오픈소스 관계형 데이터베이스 관리시스템
-</summary>
 </details>
 
 
