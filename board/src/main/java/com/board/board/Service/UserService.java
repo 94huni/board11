@@ -42,14 +42,14 @@ public class UserService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginFormDTO.getUsername(), userLoginFormDTO.getPassword()));
             return jwtProvider.createToken(userLoginFormDTO.getUsername(), userRepository.findByUsername(userLoginFormDTO.getUsername()).getUserRoles());
         }catch (AuthenticationException e){
-            throw new CustomException("사용자이름 또는 비밀번호가 틀렸습니다!", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("사용자이름 또는 비밀번호가 틀렸습니다!", HttpStatus.UNAUTHORIZED);
         }
     }
 
     //회원가입시 jwt 반환
     public String signUp(UserSignUpFormDTO userSignUpFormDTO){
         if(userRepository.existsByUsername(userSignUpFormDTO.getUsername())){
-            throw new CustomException("중복된 아이디가 있습니다!", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("중복된 아이디가 있습니다!", HttpStatus.CONFLICT);
         }
 
         if(!userSignUpFormDTO.getPassword().equals(userSignUpFormDTO.getPassword2())){
@@ -69,7 +69,7 @@ public class UserService {
     //관리자게정 생성
     public String signUpAdmin(UserSignUpFormDTO userSignUpFormDTO){
         if(userRepository.existsByUsername(userSignUpFormDTO.getUsername())){
-            throw new CustomException("중복된 아이디가 있습니다!", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("중복된 아이디가 있습니다!", HttpStatus.CONFLICT);
         }
 
         if(!userSignUpFormDTO.getPassword().equals(userSignUpFormDTO.getPassword2())){
