@@ -23,7 +23,10 @@ public class UserController {
     @PostMapping("/sign-in")
     public ResponseEntity<Map<String, String>> login(@RequestParam String username, @RequestParam String password){
         Map<String, String> response = new HashMap<>();
-        response.put("token", userService.signIn(username, password));
+        String token = userService.signIn(username, password);
+        response.put("token", token);
+        response.put("username", userService.getCurrent(token).getUsername());
+        response.put("nickname", userService.getCurrent(token).getNickname());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -31,6 +34,8 @@ public class UserController {
     public ResponseEntity<Map<String, String>> signUp(@RequestBody UserSignUpFormDTO userSignUpFormDTO){
         Map<String, String> response = new HashMap<>();
         response.put("token",userService.signUp(userSignUpFormDTO));
+        response.put("username", userSignUpFormDTO.getUsername());
+        response.put("nickname", userSignUpFormDTO.getNickname());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -40,20 +45,21 @@ public class UserController {
     }
 
     @GetMapping("/get/{user_id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Long user_id){
-        return ResponseEntity.ok(userService.getUser(user_id));
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long user_id, String token){
+        return ResponseEntity.ok(userService.getUser(user_id, token));
     }
 
     @GetMapping("/admin/getAllUser")
-    public ResponseEntity<List<UserDTO>> getAllUser() {
-        return ResponseEntity.ok(userService.getAllUser());
+    public ResponseEntity<List<UserDTO>> getAllUser(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(userService.getAllUser(token));
     }
 
     @GetMapping("/getAllUserPage")
     public ResponseEntity<Page<UserDTO>> getAllUserPage(@RequestParam(defaultValue = "0") int page,
                                                         @RequestParam(defaultValue = "10") int size,
-                                                        @RequestParam(defaultValue = "") String search){
-        return ResponseEntity.ok(userService.getAllUserPage(page, size, search));
+                                                        @RequestParam(defaultValue = "") String search,
+                                                        @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(userService.getAllUserPage(page, size, search, token));
     }
 
     @PutMapping("/update")

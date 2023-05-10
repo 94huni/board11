@@ -20,6 +20,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -82,7 +83,12 @@ public class UserService {
 
 
     //회원정보 조회
-    public UserDTO getUser(Long id){
+    public UserDTO getUser(Long id, String token){
+
+        if(!jwtProvider.validateToken(token)){
+            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
         User user = userRepository.findById(id).orElseThrow(()->new CustomException("정보를 찾을수 없습니다!", HttpStatus.NOT_FOUND));
 
         UserDTO userDTO = new UserDTO();
@@ -137,7 +143,11 @@ public class UserService {
 
 
     //전체 회원 조회
-    public List<UserDTO> getAllUser(){
+    public List<UserDTO> getAllUser(String token){
+        if(!jwtProvider.validateToken(token)){
+            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
         List<User> users = userRepository.findAll();
         List<UserDTO> userDTOS = new ArrayList<>();
 
@@ -156,7 +166,12 @@ public class UserService {
         return userDTOS;
     }
 
-    public Page<UserDTO> getAllUserPage(int page, int size, String search){
+    public Page<UserDTO> getAllUserPage(int page, int size, String search, String token){
+        if(!jwtProvider.validateToken(token)){
+            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<User> userPage = userRepository.findByUsernameContaining(search, pageable);
         Page<UserDTO> userDTOPage = userPage.map(user -> {
