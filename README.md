@@ -24,8 +24,9 @@
 
 -  Database : 
  - MariaDB : MySQL 데이터베이스의 포크버전, 오픈소스 관계형 데이터베이스 관리시스템
-</details>
 </summary>
+</details>
+
 
 
 ## 유저 기능 설명<br>
