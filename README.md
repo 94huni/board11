@@ -4,27 +4,26 @@
 
 
  ## 기술 스택
-<details>
-<summary></summary>
-- Backend : 
+
+### - Backend : 
  - Java 11 : 사용된 버전
  - Spring Boot : 자바 기반의 웹 애플리케이션 개발을 위한 프레임워크
  - Spring Data JPA : 스프링에서 JPA(Java Persistence API)를 편리하게 사용할 수 있는 모듈
 
 
 
-- 인증과 보안 :
+### - 인증과 보안 :
  - Spring Security : 스프링기반의 인증과 인과를 제공하는 보안프레임워크
  - JWT : JSON Web Token 의 약자, 웹 토큰기술 중 한개로 인증과 인가정보를 안전하게 사용할 수 있다
 
 
-- API 관리 : 
+### - API 관리 : 
  - Swagger : RESTful API 문서화를 자동화해주는 도구
 
 
--  Database : 
+### - Database : 
  - MariaDB : MySQL 데이터베이스의 포크버전, 오픈소스 관계형 데이터베이스 관리시스템
-</details>
+
 
 
 
