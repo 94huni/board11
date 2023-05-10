@@ -34,4 +34,19 @@ public class CommentController {
     public ResponseEntity<List<CommentDTO>> getCommentByUser(@PathVariable String username, @RequestHeader("Authorization") String token){
         return ResponseEntity.ok(commentService.getCommentByUser(username, token));
     }
+
+    @PutMapping("/update/{comment_id}")
+    public ResponseEntity<CommentDTO> updateComment(@RequestHeader("Authorization") String token, @PathVariable Long comment_id){
+        return ResponseEntity.ok(commentService.updateComment(comment_id, token));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteComment(@RequestHeader("Authorization") String token, @PathVariable Long comment_id){
+        boolean isDelete = commentService.deleteComment(comment_id, token) ;
+        if(isDelete){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }

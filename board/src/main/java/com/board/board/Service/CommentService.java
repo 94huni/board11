@@ -11,6 +11,7 @@ import com.board.board.Repository.CommentRepository;
 import com.board.board.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -88,6 +89,49 @@ public class CommentService {
         }
         return commentDTOS;
 
+    }
+
+    
+    //댓글 수정
+    public CommentDTO updateComment(Long comment_id, String token){
+        if(!jwtProvider.validateToken(token)){
+            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
+        String username = jwtProvider.getUsername(token);
+
+        Comment comment = commentRepository.findById(comment_id).orElseThrow(()->new CustomException("댓글을 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+
+        if(!username.equals(comment.getUser().getUsername())){
+            throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setBoard_id(comment.getBoard().getId());
+        commentDTO.setUsername(comment.getUser().getUsername());
+        commentDTO.setBoard_title(comment.getBoard().getTitle());
+        commentDTO.setContent(comment.getContent());
+
+
+        return commentDTO;
+    }
+
+    public boolean deleteComment(Long comment_id, String token){
+        if(!jwtProvider.validateToken(token)){
+            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
+        String username = jwtProvider.getUsername(token);
+
+        Comment comment = commentRepository.findById(comment_id).orElseThrow(()->new CustomException("댓글을 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+
+        if(!username.equals(comment.getUser().getUsername())){
+            throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
+        }
+
+        commentRepository.delete(comment);
+
+        return true;
     }
 
 }
