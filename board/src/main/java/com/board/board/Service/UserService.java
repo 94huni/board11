@@ -2,6 +2,7 @@ package com.board.board.Service;
 
 import com.board.board.Config.Jwt.JwtProvider;
 import com.board.board.DTO.UserDTO;
+import com.board.board.DTO.UserLoginFormDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
 import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Entity.User;
@@ -36,10 +37,10 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
 
     //로그인시 jwt 반환
-    public String signIn(String username, String password){
+    public String signIn(UserLoginFormDTO userLoginFormDTO){
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            return jwtProvider.createToken(username, userRepository.findByUsername(username).getUserRoles());
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginFormDTO.getUsername(), userLoginFormDTO.getPassword()));
+            return jwtProvider.createToken(userLoginFormDTO.getUsername(), userRepository.findByUsername(userLoginFormDTO.getUsername()).getUserRoles());
         }catch (AuthenticationException e){
             throw new CustomException("사용자이름 또는 비밀번호가 틀렸습니다!", HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -64,6 +65,27 @@ public class UserService {
         userRepository.save(user);
         return jwtProvider.createToken(user.getUsername(), user.getUserRoles());
     }
+
+    //관리자게정 생성
+    public String signUpAdmin(UserSignUpFormDTO userSignUpFormDTO){
+        if(userRepository.existsByUsername(userSignUpFormDTO.getUsername())){
+            throw new CustomException("중복된 아이디가 있습니다!", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if(!userSignUpFormDTO.getPassword().equals(userSignUpFormDTO.getPassword2())){
+            throw new CustomException("비밀번호가 다릅니다.", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        User user = new User();
+        user.setUsername(userSignUpFormDTO.getUsername());
+        user.setPassword(bCryptPasswordEncoder.encode(userSignUpFormDTO.getPassword()));
+        user.setEmail(userSignUpFormDTO.getEmail());
+        user.setNickname(userSignUpFormDTO.getNickname());
+        user.setCreateAt(LocalDateTime.now());
+        user.setUserRoles(Collections.singletonList(UserRole.ROLE_ADMIN));
+        userRepository.save(user);
+        return jwtProvider.createToken(user.getUsername(), user.getUserRoles());
+    }
+
 
     //jwt 사용자 정보
     public UserDTO getCurrent(String token){

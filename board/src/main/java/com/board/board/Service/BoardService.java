@@ -120,7 +120,7 @@ public class BoardService {
 
     }
     //카테고리별 분류
-    public Page<BoardDTO> getCategoryBoardPage(Category category, int page, int size, String search){
+    public Page<BoardDTO> getCategoryBoardPage(Category category, int page, int size){
         Pageable pageable = PageRequest.of(page, size);
         //Category categoryEnum = Category.valueOf(category);
         Page<Board> boards = boardRepository.findByCategory(category, pageable);

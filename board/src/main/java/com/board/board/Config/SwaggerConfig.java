@@ -3,6 +3,7 @@ package com.board.board.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -29,7 +30,9 @@ public class SwaggerConfig {
                 .build()
                 .securitySchemes(List.of(securityScheme()))
                 .securityContexts(Collections.singletonList(securityContext()))
-                .apiInfo(apiInfo());
+                .apiInfo(apiInfo())
+                .produces(Collections.singleton(MediaType.APPLICATION_JSON_VALUE))
+                .enableUrlTemplating(true);
     }
 
     private ApiInfo apiInfo() {

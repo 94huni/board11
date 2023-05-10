@@ -60,12 +60,11 @@ public class BoardController {
 
     //카테고리 분류
     @ApiOperation(value = "카테고리별 분류", notes = "카테고리를 선택하여 선택 카테고리에 맞게 분류하여 글 목록을 가져옵니다.")
-    @GetMapping("/category")
+    @GetMapping("/{category}")
     public ResponseEntity<Page<BoardDTO>> getBoardByCategory(@RequestParam Category category,
                                                              @RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size,
-                                                             @RequestParam(defaultValue = "") String search){
-        Page<BoardDTO> boardDTOS = boardService.getCategoryBoardPage(category, page, size, search);
+                                                             @RequestParam(defaultValue = "10") int size){
+        Page<BoardDTO> boardDTOS = boardService.getCategoryBoardPage(category, page, size);
         return ResponseEntity.ok(boardDTOS);
     }
 

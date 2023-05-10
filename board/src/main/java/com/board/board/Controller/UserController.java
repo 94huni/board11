@@ -1,6 +1,7 @@
 package com.board.board.Controller;
 
 import com.board.board.DTO.UserDTO;
+import com.board.board.DTO.UserLoginFormDTO;
 import com.board.board.DTO.UserSignUpFormDTO;
 import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Service.UserService;
@@ -27,9 +28,9 @@ public class UserController {
 
     @ApiOperation("로그인")
     @PostMapping("/sign-in")
-    public ResponseEntity<Map<String, String>> login(@RequestParam String username, @RequestParam String password){
+    public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginFormDTO userLoginFormDTO){
         Map<String, String> response = new HashMap<>();
-        String token = userService.signIn(username, password);
+        String token = userService.signIn(userLoginFormDTO);
         response.put("token", token);
         response.put("username", userService.getCurrent(token).getUsername());
         response.put("nickname", userService.getCurrent(token).getNickname());
@@ -41,6 +42,16 @@ public class UserController {
     public ResponseEntity<Map<String, String>> signUp(@RequestBody UserSignUpFormDTO userSignUpFormDTO){
         Map<String, String> response = new HashMap<>();
         response.put("token",userService.signUp(userSignUpFormDTO));
+        response.put("username", userSignUpFormDTO.getUsername());
+        response.put("nickname", userSignUpFormDTO.getNickname());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @ApiOperation("관리자 계정 생성")
+    @PostMapping("sign-up/ad")
+    public ResponseEntity<Map<String, String>> signUpAd(@RequestBody UserSignUpFormDTO userSignUpFormDTO){
+        Map<String, String> response = new HashMap<>();
+        response.put("token",userService.signUpAdmin(userSignUpFormDTO));
         response.put("username", userSignUpFormDTO.getUsername());
         response.put("nickname", userSignUpFormDTO.getNickname());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -81,7 +92,8 @@ public class UserController {
 
 
     @ApiOperation("유저정보 삭제")
-    @DeleteMapping("/delete")
+    @ApiResponses({@ApiResponse(code = 204, message = "성공적으로 삭제되었습니다!")})
+    @DeleteMapping("/delete/{user_id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long user_id, @RequestHeader("Authorization")String token){
         boolean isDelete = userService.deleteUser(user_id, token);
         if(isDelete){
