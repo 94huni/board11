@@ -188,8 +188,17 @@ public class UserService {
         return userDTOPage;
     }
 
-    public boolean deleteUser(Long id){
-        userRepository.deleteById(id);
+    public boolean deleteUser(Long id, String token){
+        if(!jwtProvider.validateToken(token)){
+            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+        }
+        User user = userRepository.findById(id).orElseThrow(()->new CustomException("회원정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+        String username = jwtProvider.getUsername(token);
+
+        if(!user.getUsername().equals(username)){
+            throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
+        }
+        userRepository.delete(user);
         return true;
     }
 
