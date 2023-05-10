@@ -29,7 +29,14 @@
 
 ## 유저 기능 설명<br>
  - 로그인<br>
-  [http://localhost:8080/user/sign-in](board/src/docs/sign-in.json)
+#### 요청<br>
+  [/user/sign-in](board/src/docs/sign-in.json)<br>
+  요청메서드 : 'POST'<br>
+#### 응답<br>
+  성공 응답 상태 코드 : '200 OK'<br>
+  응답 형식 : JSON <br>
+#### 오류처리
+  
  - [회원가입](/)
  - [정보조회](/)
  - [관리자의 전체정보 조회](/)
