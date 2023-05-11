@@ -165,29 +165,6 @@ public class UserService {
 
 
     //전체 회원 조회
-    public List<UserDTO> getAllUser(String token){
-        if(!jwtProvider.validateToken(token)){
-            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
-        }
-
-        List<User> users = userRepository.findAll();
-        List<UserDTO> userDTOS = new ArrayList<>();
-
-        for(int i=0; i<users.size(); i++){
-            User user = users.get(i);
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(user.getUsername());
-            userDTO.setNickname(user.getNickname());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setUserRoles(user.getUserRoles());
-            userDTO.setCreateAt(user.getCreateAt());
-            userDTO.setBoard_count(user.getBoardList().size());
-            userDTO.setComment_count(user.getCommentList().size());
-            userDTOS.add(userDTO);
-        }
-        return userDTOS;
-    }
-
     public Page<UserDTO> getAllUserPage(int page, int size, String search, String token){
         if(!jwtProvider.validateToken(token)){
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
