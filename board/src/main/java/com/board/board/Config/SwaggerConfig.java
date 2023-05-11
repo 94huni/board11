@@ -30,9 +30,7 @@ public class SwaggerConfig {
                 .build()
                 .securitySchemes(List.of(securityScheme()))
                 .securityContexts(Collections.singletonList(securityContext()))
-                .apiInfo(apiInfo())
-                .produces(Collections.singleton(MediaType.APPLICATION_JSON_VALUE))
-                .enableUrlTemplating(true);
+                .apiInfo(apiInfo());
     }
 
     private ApiInfo apiInfo() {
