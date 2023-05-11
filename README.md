@@ -30,29 +30,29 @@
 ### 로그인
 - **요청**
   - Request Method: `POST`
-  - Request Body: [클릭하여 확인](board/src/docs)
+  - Request Body: [클릭하여 확인](board/src/docs/Request/User/signin.json)
   - URL: `/user/sign-in`
 - **응답**
-  - Response Body: [클릭하여 확인](board/src/docs/)
+  - Response Body: [클릭하여 확인](board/src/docs/Response/User/signin.json)
   - Success Response Status Code: `200 OK`
   - Response Format: JSON
 - **오류 처리**
-  - [로그인 실패](board/src/docs)
+  - [로그인 실패](board/src/docs/Error/401_username.json)
   - Response Format: JSON
 
 ### 회원가입
 - **요청**
   - Request Method: `POST`
-  - Request Body: [클릭하여 확인](board/src/docs)
+  - Request Body: [클릭하여 확인](board/src/docs/Request/User/signup.json)
   - URL: `/user/sign-up`
 - **응답**
-  - Response Body: [클릭하여 확인](board/src/docs/)
+  - Response Body: [클릭하여 확인](board/src/docs/Response/User/signup.json)
   - Success Response Status Code: `201 Created`
   - Response Format: JSON
 - **오류처리**
-  - [로그인 실패 응답](board/src/docs)
+  - [중복된 아이디가 있을때 응답](board/src/docs/Error/409.json)
   - Response Format: JSON
-  - [비밀번호가 다를때 응답](board/src/docs)
+  - [비밀번호가 다를때 응답](board/src/docs/Error/400.json)
   - Response Format: JSON
 
 ### 회원 정보 조회
@@ -60,30 +60,30 @@
   - Request Method: `GET`
   - URL: `/user/get/{user_id}`
 - **응답**
-  - Response Body: [클릭하여 확인](board/src/docs/)
+  - Response Body: [클릭하여 확인](board/src/docs/Response/User/getUser.json)
   - Success Response Status Code: `200 OK`
   - Response Format: JSON
 - **오류처리**
-  - [토큰인증 실패 응답](board/src/docs)
+  - [토큰인증 실패 응답](board/src/docs/Error/401.json)
   - Response Format: JSON
-  - [정보조회 실패 응답](board/src/docs)
+  - [정보조회 실패 응답](board/src/docs/Error/404_user.json)
   - Response Format: JSON
 
 ### 회원 정보 수정 
 - **요청**
   - Request Method: `PUT`
-  - Request Body: [클릭하여 확인](board/src/docs)
+  - Request Body: [클릭하여 확인](board/src/docs/Request/User/updateUser.json)
   - URL: `/user/update`
 - **응답**
-  - Response Body: [클릭하여 확인](board/src/docs/)
+  - Response Body: [클릭하여 확인](board/src/docs/Response/User/updateUser.json)
   - Success Response Status Code: `200 OK`
   - Response Format: JSON
 - **오류처리**
-  - [토큰인증 실패 응답](board/src/docs)
+  - [토큰인증 실패 응답](board/src/Error/401.json)
   - Response Format: JSON
-  - [사용자의 토큰이 아닐시 응답](board/src/docs)
+  - [사용자의 토큰이 아닐시 응답](board/src/docs/Error/401_authority.json)
   - Response Format: JSON
-  - [비밀번호가 다를때 응답](board/src/docs)
+  - [비밀번호가 다를때 응답](board/src/docs/Error/400.json)
   - Response Format: JSON
 
 ### 회원 정보 삭제
@@ -94,11 +94,11 @@
   - Success Response Status Code: `204 No Content`
   - Response Format: JSON
 - **오류처리**
-  - [토큰인증 실패 응답](board/src/docs)
+  - [토큰인증 실패 응답](board/src/docs/401.json)
   - Response Format: JSON
-  - [사용자의 토큰이 아닐시 응답](board/src/docs)
+  - [사용자의 토큰이 아닐시 응답](board/src/docs/Error/401_authority.json)
   - Response Format: JSON
-  - [정보조회 실패 응답](board/src/docs)
+  - [정보조회 실패 응답](board/src/docs/Error/404.json)
   - Response Format: JSON
 
 
