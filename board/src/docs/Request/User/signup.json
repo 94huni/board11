@@ -1,0 +1,7 @@
+{
+  "email": "string",
+  "nickname": "string",
+  "password": "string",
+  "password2": "string",
+  "username": "string"
+}

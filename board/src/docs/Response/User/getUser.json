@@ -1,0 +1,11 @@
+{
+  "username": "test",
+  "email": "test@test.com",
+  "nickname": "test55",
+  "createAt": "2023-05-06T01:30:34.561629",
+  "userRoles": [
+    "ROLE_USER"
+  ],
+  "board_count": 2,
+  "comment_count": 4
+}

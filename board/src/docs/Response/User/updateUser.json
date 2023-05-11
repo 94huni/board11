@@ -1,0 +1,11 @@
+{
+  "username": "updatetest",
+  "email": "updatetest@updatetest.com",
+  "nickname": "updatetest",
+  "createAt": "2023-05-11T16:13:07.649309",
+  "userRoles": [
+    "ROLE_ADMIN"
+  ],
+  "board_count": 2,
+  "comment_count": 4
+}
