@@ -98,7 +98,7 @@
   - Response Format: JSON
   - [사용자의 토큰이 아닐시 응답](board/src/docs/Error/401_authority.json)
   - Response Format: JSON
-  - [정보조회 실패 응답](board/src/docs/Error/404.json)
+  - [정보조회 실패 응답](board/src/docs/Error/404_user.json)
   - Response Format: JSON
 
 
