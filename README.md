@@ -58,7 +58,6 @@
 ### 회원 정보 조회
 - **요청**
   - Request Method: `GET`
-  - Request Body: [클릭하여 확인](board/src/docs)
   - URL: `/user/get/{user_id}`
 - **응답**
   - Response Body: [클릭하여 확인](board/src/docs/)
@@ -90,10 +89,8 @@
 ### 회원 정보 삭제
 - **요청**
   - Request Method: `DELETE`
-  - Request Body: [클릭하여 확인](board/src/docs)
   - URL: `/user/delete/{user_id}`
 - **응답**
-  - Response Body: [클릭하여 확인](board/src/docs/)
   - Success Response Status Code: `204 No Content`
   - Response Format: JSON
 - **오류처리**
