@@ -65,8 +65,9 @@ public class UserController {
 
     @ApiOperation("유저정보 조회")
     @GetMapping("/get/{user_id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Long user_id, String token){
-        return ResponseEntity.ok(userService.getUser(user_id, token));
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long user_id,@RequestHeader("Authorization") String token){
+        UserDTO userDTO = userService.getUser(user_id, token);
+        return ResponseEntity.ok(userDTO);
     }
 
     //페이징 처리 전 코드

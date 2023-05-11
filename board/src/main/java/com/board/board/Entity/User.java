@@ -21,11 +21,11 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @Size(max = 50, message = "닉네임은 50글자까지 입니다!")
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String nickname;
 
     @Size(min = 4, message = "비밀번호는 최소 4글자입니다!")
