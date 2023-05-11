@@ -56,7 +56,7 @@ public class CommentController {
     }
 
     @ApiOperation("댓글 삭제")
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{comment_id}")
     public ResponseEntity<Void> deleteComment(@RequestHeader("Authorization") String token, @PathVariable Long comment_id){
         boolean isDelete = commentService.deleteComment(comment_id, token) ;
         if(isDelete){

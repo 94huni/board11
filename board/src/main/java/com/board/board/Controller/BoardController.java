@@ -27,21 +27,21 @@ public class BoardController {
 
     @ApiOperation(value = "글등록")
     @PostMapping("/create")
-    public ResponseEntity<String> createBoard(BoardCreateFormDTO boardCreateFormDTO, @RequestHeader("Authorization") String token){
-        Board board = boardService.createBoard(boardCreateFormDTO, token);
+    public ResponseEntity<BoardDTO> createBoard(BoardCreateFormDTO boardCreateFormDTO, @RequestHeader("Authorization") String token){
+        BoardDTO boardDTO = boardService.createBoard(boardCreateFormDTO, token);
 
-        URI location = ServletUriComponentsBuilder
+/*        URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(board.getId())
-                .toUri();
+                .toUri();*/
 
-        return ResponseEntity.created(location).body("게시글 등록이 성공했습니다!");
+        return ResponseEntity.status(HttpStatus.CREATED).body(boardDTO);
     }
 
 
     @ApiOperation(value = "글 조회", notes = "게시판 고유번호를 받아서 그 번호의 게시글을 가져옵니다.")
-    @GetMapping("/board/{board_id}")
+    @GetMapping("/get/{board_id}")
     public ResponseEntity<BoardDTO> getBoard(@PathVariable Long board_id){
         BoardDTO boardDTO = boardService.getBoard(board_id);
         return ResponseEntity.ok(boardDTO);
@@ -49,7 +49,7 @@ public class BoardController {
 
     //유저의 전체 글 조회
     @ApiOperation(value = "회원의 글 전체 조회", notes = "회원 아이디를 입력받아 jwt 검증이후 회원의 전체 글 목록을 가져옵니다.")
-    @GetMapping("/user/{username}")
+    @GetMapping("/get/{username}")
     public ResponseEntity<Page<BoardDTO>> getBoardByUser(@PathVariable String username,
                                                          @RequestHeader("Authorization") String token,
                                                          @RequestParam(defaultValue = "0") int page,

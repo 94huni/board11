@@ -87,7 +87,7 @@ public class UserController {
 
     @ApiOperation(value = "유저정보변경", notes = "사용자의 정보를 확인하고 유저정보를 변경할 수 있다.")
     @PutMapping("/update")
-    public ResponseEntity<UserDTO> updateUser(@RequestHeader("Authorization")String token, UserUpdateFormDTO userUpdateFormDTO){
+    public ResponseEntity<UserDTO> updateUser(@RequestHeader("Authorization")String token,@RequestBody UserUpdateFormDTO userUpdateFormDTO){
         return ResponseEntity.ok(userService.updateUser(userUpdateFormDTO, token));
     }
 

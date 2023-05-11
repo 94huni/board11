@@ -32,7 +32,7 @@ public class BoardService {
 
 
     //글등록
-    public Board createBoard(BoardCreateFormDTO boardCreateFormDTO, String token){
+    public BoardDTO createBoard(BoardCreateFormDTO boardCreateFormDTO, String token){
         if(!jwtProvider.validateToken(token)){
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
@@ -53,8 +53,14 @@ public class BoardService {
         board.setCategory(boardCreateFormDTO.getCategory());
         boardRepository.save(board);
 
-        jwtProvider.getAuthentication(token).getPrincipal();
-        return board;
+        BoardDTO boardDTO = new BoardDTO();
+        boardDTO.setTitle(board.getTitle());
+        boardDTO.setNickname(board.getUser().getNickname());
+        boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
+        boardDTO.setCreateAt(board.getCreateAt());
+        boardDTO.setComment_count(board.getCommentList().size());
+
+        return boardDTO;
     }
 
     //글정보

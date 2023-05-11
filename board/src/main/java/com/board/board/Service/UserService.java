@@ -53,7 +53,7 @@ public class UserService {
         }
 
         if(!userSignUpFormDTO.getPassword().equals(userSignUpFormDTO.getPassword2())){
-            throw new CustomException("비밀번호가 다릅니다.", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST);
         }
         User user = new User();
         user.setUsername(userSignUpFormDTO.getUsername());
@@ -147,7 +147,7 @@ public class UserService {
                 user.setNickname(user.getNickname());
                 userRepository.save(user);
             }else {
-                throw new RuntimeException("비밀번호가 다릅니다.");
+                throw new CustomException("비밀번호가 다릅니다!", HttpStatus.BAD_REQUEST);
             }
         }else {
             user.setNickname(userUpdateFormDTO.getNickname());
