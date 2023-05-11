@@ -6,6 +6,7 @@ import com.board.board.DTO.BoardDTO;
 import com.board.board.DTO.BoardUpdateFormDTO;
 import com.board.board.Entity.Board;
 import com.board.board.Entity.Category;
+import com.board.board.Entity.Comment;
 import com.board.board.Entity.User;
 import com.board.board.Exception.CustomException;
 import com.board.board.Repository.BoardRepository;
@@ -58,7 +59,12 @@ public class BoardService {
         boardDTO.setNickname(board.getUser().getNickname());
         boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
         boardDTO.setCreateAt(board.getCreateAt());
-        boardDTO.setComment_count(board.getCommentList().size());
+        boardDTO.setContent(board.getContent());
+        if(board.getCommentList() == null){
+            boardDTO.setComment_count(0);
+        }else {
+            boardDTO.setComment_count(board.getCommentList().size());
+        }
 
         return boardDTO;
     }
@@ -72,7 +78,12 @@ public class BoardService {
         boardDTO.setContent(board.getContent());
         boardDTO.setCreateAt(board.getCreateAt());
         boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
-        boardDTO.setComment_count(board.getCommentList().size());
+        List<Comment> comments = board.getCommentList();
+        if(comments == null){
+            boardDTO.setComment_count(0);
+        }else {
+            boardDTO.setComment_count(board.getCommentList().size());
+        }
         return boardDTO;
     }
 
@@ -117,8 +128,13 @@ public class BoardService {
             boardDTO.setTitle(board.getTitle());
             boardDTO.setContent(board.getContent());
             boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
-            boardDTO.setComment_count(board.getCommentList().size());
             boardDTO.setCreateAt(board.getCreateAt());
+            List<Comment> comments = board.getCommentList();
+            if(comments == null){
+                boardDTO.setComment_count(0);
+            }else {
+                boardDTO.setComment_count(board.getCommentList().size());
+            }
             return boardDTO;
         });
 
@@ -136,8 +152,13 @@ public class BoardService {
             boardDTO.setTitle(board.getTitle());
             boardDTO.setContent(board.getContent());
             boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
-            boardDTO.setComment_count(board.getCommentList().size());
             boardDTO.setCreateAt(board.getCreateAt());
+            List<Comment> comments = board.getCommentList();
+            if(comments == null){
+                boardDTO.setComment_count(0);
+            }else {
+                boardDTO.setComment_count(board.getCommentList().size());
+            }
             return boardDTO;
         });
 
@@ -177,8 +198,12 @@ public class BoardService {
         boardDTO.setNickname(user.getNickname());
         boardDTO.setContent(board.getContent());
         boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
-        boardDTO.setComment_count(board.getCommentList().size());
         boardDTO.setCreateAt(board.getCreateAt());
+        if(board.getCommentList() == null){
+            boardDTO.setComment_count(0);
+        }else {
+            boardDTO.setComment_count(board.getCommentList().size());
+        }
 
         return boardDTO;
     }

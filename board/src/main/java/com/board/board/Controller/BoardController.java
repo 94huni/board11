@@ -41,7 +41,7 @@ public class BoardController {
 
 
     @ApiOperation(value = "글 조회", notes = "게시판 고유번호를 받아서 그 번호의 게시글을 가져옵니다.")
-    @GetMapping("/get/{board_id}")
+    @GetMapping("/board/{board_id}")
     public ResponseEntity<BoardDTO> getBoard(@PathVariable Long board_id){
         BoardDTO boardDTO = boardService.getBoard(board_id);
         return ResponseEntity.ok(boardDTO);
@@ -49,7 +49,7 @@ public class BoardController {
 
     //유저의 전체 글 조회
     @ApiOperation(value = "회원의 글 전체 조회", notes = "회원 아이디를 입력받아 jwt 검증이후 회원의 전체 글 목록을 가져옵니다.")
-    @GetMapping("/get/{username}")
+    @GetMapping("/user/{username}")
     public ResponseEntity<Page<BoardDTO>> getBoardByUser(@PathVariable String username,
                                                          @RequestHeader("Authorization") String token,
                                                          @RequestParam(defaultValue = "0") int page,
@@ -60,7 +60,7 @@ public class BoardController {
 
     //카테고리 분류
     @ApiOperation(value = "카테고리별 분류", notes = "카테고리를 선택하여 선택 카테고리에 맞게 분류하여 글 목록을 가져옵니다.")
-    @GetMapping("/{category}")
+    @GetMapping("/get/boards")
     public ResponseEntity<Page<BoardDTO>> getBoardByCategory(@RequestParam Category category,
                                                              @RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "10") int size){
