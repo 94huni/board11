@@ -3,7 +3,6 @@ package com.board.board.Controller;
 import com.board.board.DTO.BoardCreateFormDTO;
 import com.board.board.DTO.BoardDTO;
 import com.board.board.DTO.BoardUpdateFormDTO;
-import com.board.board.Entity.Board;
 import com.board.board.Entity.Category;
 import com.board.board.Service.BoardService;
 import io.swagger.annotations.ApiOperation;
@@ -13,10 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,18 +21,23 @@ public class BoardController {
     private final BoardService boardService;
 
 
+
     @ApiOperation(value = "글등록")
     @PostMapping("/create")
     public ResponseEntity<BoardDTO> createBoard(BoardCreateFormDTO boardCreateFormDTO, @RequestHeader("Authorization") String token){
-        BoardDTO boardDTO = boardService.createBoard(boardCreateFormDTO, token);
+        BoardDTO board = boardService.createBoard(boardCreateFormDTO, token);
 
-/*        URI location = ServletUriComponentsBuilder
+/*
+        URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(board.getId())
-                .toUri();*/
+                .toUri();
+*/
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(boardDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(board);
+
     }
 
 

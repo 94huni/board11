@@ -17,10 +17,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,35 +38,39 @@ public class BoardService {
 
     //글등록
     public BoardDTO createBoard(BoardCreateFormDTO boardCreateFormDTO, String token){
-        if(!jwtProvider.validateToken(token)){
-            throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+        if (!jwtProvider.validateToken(token)) {
+            throw new CustomException("만료되었거나 잘못된 토큰입니다!", HttpStatus.UNAUTHORIZED);
         }
         String username = jwtProvider.getUsername(token);
-        String currentUser = ((UserDetails) jwtProvider.getAuthentication(token).getPrincipal()).getUsername();
-
-        if(!currentUser.equals(username)){
-            throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
-        }
-
         User user = userRepository.findByUsername(username);
+
         Board board = new Board();
         board.setTitle(boardCreateFormDTO.getTitle());
-        board.setContent(boardCreateFormDTO.getContent());
-        board.setImage(boardCreateFormDTO.getMultipartFile());
-        board.setCreateAt(LocalDateTime.now());
-        board.setUser(user);
         board.setCategory(boardCreateFormDTO.getCategory());
+        board.setCreateAt(LocalDateTime.now());
+        board.setImage(boardCreateFormDTO.getMultipartFile());
+        board.setContent(boardCreateFormDTO.getContent());
+        board.setCommentList(null);
+        board.setUser(user);
+
         boardRepository.save(board);
 
         BoardDTO boardDTO = new BoardDTO();
-        boardDTO.setTitle(board.getTitle());
-        boardDTO.setNickname(board.getUser().getNickname());
-        boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
         boardDTO.setCreateAt(board.getCreateAt());
-        boardDTO.setComment_count(board.getCommentList().size());
+        boardDTO.setContent(board.getContent());
+        boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
+        boardDTO.setNickname(board.getUser().getNickname());
+        boardDTO.setTitle(board.getTitle());
+        if(board.getCommentList() == null){
+            boardDTO.setComment_count(0);
+        }else {
+            boardDTO.setComment_count(board.getCommentList().size());
+        }
 
         return boardDTO;
     }
+
+
 
     //글정보
     public BoardDTO getBoard(Long id){
@@ -198,4 +207,20 @@ public class BoardService {
         return true;
     }
 
+    //이미지 등록
+    public String saveImage(MultipartFile file) {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String uploadDir = "/path/to/upload/directory"; // 파일을 저장할 경로를 지정해야 합니다. 실제 경로로 변경해주세요.
+        String imagePath = uploadDir + "/" + fileName;
+
+        try {
+            Path destinationPath = Path.of(imagePath);
+            Files.createDirectories(destinationPath.getParent());
+            Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+            return imagePath;
+        } catch (IOException e) {
+            throw new CustomException("이미지 저장 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }
