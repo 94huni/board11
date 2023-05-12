@@ -119,9 +119,13 @@ public class UserService {
         userDTO.setCreateAt(user.getCreateAt());
         if(user.getBoardList() != null){
             userDTO.setBoard_count(user.getBoardList().size());
-            userDTO.setComment_count(user.getCommentList().size());
         }else {
             userDTO.setBoard_count(0);
+        }
+
+        if (user.getCommentList() != null) {
+            userDTO.setComment_count(user.getCommentList().size());
+        }else {
             userDTO.setComment_count(0);
         }
 
