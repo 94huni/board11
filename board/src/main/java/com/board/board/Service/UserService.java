@@ -102,8 +102,6 @@ public class UserService {
         return userDTO;
     }
 
-
-
     //회원정보 조회
     public UserDTO getUser(Long id, String token){
 
@@ -119,8 +117,14 @@ public class UserService {
         userDTO.setUserRoles(user.getUserRoles());
         userDTO.setEmail(user.getEmail());
         userDTO.setCreateAt(user.getCreateAt());
-        userDTO.setBoard_count(user.getBoardList().size());
-        userDTO.setComment_count(user.getCommentList().size());
+        if(user.getBoardList() != null){
+            userDTO.setBoard_count(user.getBoardList().size());
+            userDTO.setComment_count(user.getCommentList().size());
+        }else {
+            userDTO.setBoard_count(0);
+            userDTO.setComment_count(0);
+        }
+
         return userDTO;
     }
 
