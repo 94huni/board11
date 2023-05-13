@@ -181,6 +181,45 @@ public class UserGetTest {
     }
 
     @Test
+    public void getAllUser_NotSearchSuccessful() {
+        String token = "AllUserTest";
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        int page = 0;
+        int size = 10;
+        String search = null;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            User user = new User();
+            user.setId((long) i);
+            user.setPassword(bCryptPasswordEncoder.encode("1234"));
+            user.setUsername("AllUserTest" + i);
+            user.setNickname("TestUser" + i);
+            user.setEmail("Test" + i + "@test.com");
+            user.setUserRoles(Collections.singletonList(UserRole.ROLE_USER));
+            user.setCommentList(null);
+            user.setBoardList(null);
+            users.add(user);
+        }
+        Page<User> userPage = new PageImpl<>(users, pageable, 5);
+        when(userRepository.findByUsernameContaining(search, pageable)).thenReturn(userPage);
+
+        Page<UserDTO> userDTOPage = userService.getAllUserPage(page, size, search, token);
+        assertNotNull(userDTOPage);
+        assertEquals(page, userDTOPage.getNumber());
+        assertEquals(size, userDTOPage.getSize());
+        assertEquals(5, userDTOPage.getTotalElements());
+        assertEquals(1, userDTOPage.getTotalPages());
+
+        List<UserDTO> userDtoList = userDTOPage.getContent();
+        UserDTO firstUserDTO = userDtoList.get(0);
+        assertEquals("AllUserTest0", firstUserDTO.getUsername());
+        assertEquals("Test0@test.com", firstUserDTO.getEmail());
+        assertEquals("TestUser0", firstUserDTO.getNickname());
+    }
+
+    @Test
     public void getAllUser_SearchFail() {
 
         String token = "AllUserTest";
