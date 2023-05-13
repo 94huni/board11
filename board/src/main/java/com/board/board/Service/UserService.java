@@ -188,8 +188,18 @@ public class UserService {
             userDto.setNickname(user.getNickname());
             userDto.setCreateAt(user.getCreateAt());
             userDto.setUserRoles(user.getUserRoles());
-            userDto.setBoard_count(user.getBoardList().size());
-            userDto.setComment_count(user.getCommentList().size());
+            if(user.getBoardList() != null){
+                userDto.setBoard_count(user.getBoardList().size());
+            }else {
+                userDto.setBoard_count(0);
+            }
+
+            if(user.getCommentList() != null){
+                userDto.setComment_count(user.getCommentList().size());
+            }else {
+                userDto.setComment_count(0);
+            }
+
             return userDto;
         });
         return userDTOPage;
