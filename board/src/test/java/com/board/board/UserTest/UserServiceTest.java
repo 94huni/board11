@@ -1,7 +1,6 @@
 package com.board.board.UserTest;
 
 import com.board.board.Config.Jwt.JwtProvider;
-import com.board.board.DTO.BoardDTO;
 import com.board.board.DTO.UserDTO;
 import com.board.board.Entity.Board;
 import com.board.board.Entity.Comment;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class UserGetTest {
+public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
