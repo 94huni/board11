@@ -181,6 +181,11 @@ public class UserService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<User> userPage = userRepository.findByUsernameContaining(search, pageable);
+
+        if(userPage == null){
+            throw new CustomException("검색결과가 없습니다!", HttpStatus.NOT_FOUND);
+        }
+
         Page<UserDTO> userDTOPage = userPage.map(user -> {
             UserDTO userDto = new UserDTO();
             userDto.setUsername(user.getUsername());
