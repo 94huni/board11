@@ -36,7 +36,7 @@ public class UserGetTest {
     private UserService userService;
 
     @Test
-    public void getUserTest(){
+    public void getUserTest() {
         String token = "token";
 
         User user = new User();
@@ -56,14 +56,14 @@ public class UserGetTest {
 
         assertNotNull(userDTO);
         assertEquals("userTest", userDTO.getUsername());
-        assertEquals("userTest@test.com",userDTO.getEmail());
-        assertEquals(Collections.singletonList(UserRole.ROLE_USER) , userDTO.getUserRoles());
+        assertEquals("userTest@test.com", userDTO.getEmail());
+        assertEquals(Collections.singletonList(UserRole.ROLE_USER), userDTO.getUserRoles());
         assertEquals(user.getCreateAt(), userDTO.getCreateAt());
 
     }
 
     @Test
-    public void getUserWithBoardAndCommentCountTest(){
+    public void getUserWithBoardAndCommentCountTest() {
         String token = "token";
 
         User user = new User();
@@ -79,7 +79,7 @@ public class UserGetTest {
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         List<Board> boards = new ArrayList<>();
-        for(int i=0; i<10; i++){
+        for (int i = 0; i < 10; i++) {
             Board board = new Board();
             board.setUser(user);
             board.setTitle("Test" + i);
@@ -89,7 +89,7 @@ public class UserGetTest {
         user.setBoardList(boards);
 
         List<Comment> comments = new ArrayList<>();
-        for (int i=0; i<10; i++){
+        for (int i = 0; i < 10; i++) {
             Comment comment = new Comment();
             comment.setUser(user);
             comment.setBoard(boards.get(i));
@@ -102,22 +102,22 @@ public class UserGetTest {
 
         assertNotNull(userDTO);
         assertEquals("userTest", userDTO.getUsername());
-        assertEquals("userTest@test.com",userDTO.getEmail());
-        assertEquals(Collections.singletonList(UserRole.ROLE_USER) , userDTO.getUserRoles());
+        assertEquals("userTest@test.com", userDTO.getEmail());
+        assertEquals(Collections.singletonList(UserRole.ROLE_USER), userDTO.getUserRoles());
         assertEquals(user.getCreateAt(), userDTO.getCreateAt());
         assertEquals(user.getBoardList().size(), userDTO.getBoard_count());
         assertEquals(user.getCommentList().size(), userDTO.getComment_count());
     }
 
     @Test
-    public void invalidTokenGetUser(){
+    public void invalidTokenUser() {
         String token = "token";
         Long id = 1L;
 
         when(jwtProvider.validateToken(token)).thenReturn(false);
 
         CustomException exception = assertThrows(CustomException.class, () -> {
-           userService.getUser(id,token);
+            userService.getUser(id, token);
         });
 
         assertEquals("만료되었거나 토큰이 잘못됐습니다!", exception.getMessage());
@@ -125,23 +125,23 @@ public class UserGetTest {
     }
 
     @Test
-    public void notFoundGetUser(){
+    public void notFoundGetUser() {
         Long id = 1L;
         String token = "token";
 
         when(jwtProvider.validateToken(token)).thenReturn(true);
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        CustomException exception = assertThrows(CustomException.class, ()->{
+        CustomException exception = assertThrows(CustomException.class, () -> {
             userService.getUser(id, token);
         });
 
         assertEquals("정보를 찾을수 없습니다!", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
     }
-    
+
     @Test
-    public void getAllUser_SuccessfulTest(){
+    public void getAllUser_SuccessfulTest() {
         String token = "AllUserTest";
         when(jwtProvider.validateToken(token)).thenReturn(true);
         int page = 0;
@@ -150,13 +150,13 @@ public class UserGetTest {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
         List<User> users = new ArrayList<>();
-        for (int i=0; i<5; i++){
+        for (int i = 0; i < 5; i++) {
             User user = new User();
             user.setId((long) i);
             user.setPassword(bCryptPasswordEncoder.encode("1234"));
-            user.setUsername("AllUserTest"+i);
-            user.setNickname("TestUser"+i);
-            user.setEmail("Test"+i+"@test.com");
+            user.setUsername("AllUserTest" + i);
+            user.setNickname("TestUser" + i);
+            user.setEmail("Test" + i + "@test.com");
             user.setUserRoles(Collections.singletonList(UserRole.ROLE_USER));
             user.setCommentList(null);
             user.setBoardList(null);
@@ -180,5 +180,27 @@ public class UserGetTest {
 
     }
 
+    @Test
+    public void getAllUser_SearchFail() {
+
+        String token = "AllUserTest";
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        int page = 0;
+        int size = 10;
+        String search = "Fail";
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        List<User> users = new ArrayList<>();
+
+        Page<User> userPage = new PageImpl<>(users, pageable, 5);
+        when(userRepository.findByUsernameContaining(search, pageable)).thenReturn(null);
+
+        CustomException exception = assertThrows(CustomException.class, ()->{
+            userService.getAllUserPage(page, size, search, token);
+        });
+
+        assertEquals("검색결과가 없습니다!", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
 
 }
