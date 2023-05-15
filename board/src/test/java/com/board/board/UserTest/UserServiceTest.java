@@ -323,6 +323,23 @@ public class UserServiceTest {
     }
 
     @Test
+    public void updateUser_InvalidToken() {
+        String token = "token";
+        User user = new User();
+
+        UserUpdateFormDTO userUpdateFormDTO = new UserUpdateFormDTO();
+
+        when(jwtProvider.validateToken(token)).thenReturn(false);
+
+        CustomException exception = assertThrows(CustomException.class, () -> {
+            userService.updateUser(userUpdateFormDTO, token);
+        });
+
+        assertEquals("만료되었거나 토큰이 잘못됐습니다!", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+    }
+
+    @Test
     public void deleteUser_SuccessfulTest() {
         String token = "token";
 
