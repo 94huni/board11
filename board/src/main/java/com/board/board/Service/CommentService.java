@@ -31,13 +31,13 @@ public class CommentService {
     private final JwtProvider jwtProvider;
 
     //댓글생성
-    public CommentDTO createComment(Long board_id, String content, String token){
-        if(!jwtProvider.validateToken(token)){
+    public CommentDTO createComment(Long board_id, String content, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
         String username = jwtProvider.getUsername(token);
         User user = userRepository.findByUsername(username);
-        Board board = boardRepository.findById(board_id).orElseThrow(()->new CustomException("게시글 정보가 없거나 잘못됐습니다!", HttpStatus.NOT_FOUND));
+        Board board = boardRepository.findById(board_id).orElseThrow(() -> new CustomException("게시글 정보가 없거나 잘못됐습니다!", HttpStatus.NOT_FOUND));
         Comment comment = new Comment();
         comment.setContent(content);
         comment.setBoard(board);
@@ -50,13 +50,13 @@ public class CommentService {
         commentDTO.setUsername(comment.getUser().getUsername());
         commentDTO.setBoard_id(board.getId());
         commentDTO.setBoard_title(board.getTitle());
-        return  commentDTO;
+        return commentDTO;
     }
 
     //게시글 정보로 댓글정보조회
-    public Page<CommentDTO> getCommentByBoardPage(Long board_id, int page, int size){
+    public Page<CommentDTO> getCommentByBoardPage(Long board_id, int page, int size) {
         Board board = boardRepository.findById(board_id)
-                .orElseThrow(()->new CustomException("게시글을 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("게시글을 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Comment> comments = commentRepository.findByBoard(pageable, board);
@@ -75,40 +75,39 @@ public class CommentService {
 
 
     //유저아이디로 댓글정보조회
-    public Page<CommentDTO> getCommentByUserPage(Long user_id, String token, int page, int size){
-        if(!jwtProvider.validateToken(token)){
+    public Page<CommentDTO> getCommentByUserPage(Long user_id, String token, int page, int size) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        User user = userRepository.findById(user_id).orElseThrow(()->new CustomException("유저정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
-        Page<Comment> comments = commentRepository.findByUser(pageable,user);
+        User user = userRepository.findById(user_id).orElseThrow(() -> new CustomException("유저정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+        Page<Comment> comments = commentRepository.findByUser(pageable, user);
 
         Page<CommentDTO> commentDTOS = comments.map(comment -> {
-           CommentDTO commentDTO = new CommentDTO();
-           commentDTO.setBoard_id(comment.getBoard().getId());
-           commentDTO.setUsername(comment.getUser().getUsername());
-           commentDTO.setBoard_title(comment.getBoard().getTitle());
-           commentDTO.setContent(comment.getContent());
-           return commentDTO;
+            CommentDTO commentDTO = new CommentDTO();
+            commentDTO.setBoard_id(comment.getBoard().getId());
+            commentDTO.setUsername(comment.getUser().getUsername());
+            commentDTO.setBoard_title(comment.getBoard().getTitle());
+            commentDTO.setContent(comment.getContent());
+            return commentDTO;
         });
 
         return commentDTOS;
     }
 
 
-
     //댓글 수정
-    public CommentDTO updateComment(Long comment_id, String token){
-        if(!jwtProvider.validateToken(token)){
+    public CommentDTO updateComment(Long comment_id, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
 
         String username = jwtProvider.getUsername(token);
 
-        Comment comment = commentRepository.findById(comment_id).orElseThrow(()->new CustomException("댓글을 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+        Comment comment = commentRepository.findById(comment_id).orElseThrow(() -> new CustomException("댓글을 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
 
-        if(!username.equals(comment.getUser().getUsername())){
+        if (!username.equals(comment.getUser().getUsername())) {
             throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
         }
 
@@ -122,16 +121,16 @@ public class CommentService {
         return commentDTO;
     }
 
-    public boolean deleteComment(Long comment_id, String token){
-        if(!jwtProvider.validateToken(token)){
+    public boolean deleteComment(Long comment_id, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
 
         String username = jwtProvider.getUsername(token);
 
-        Comment comment = commentRepository.findById(comment_id).orElseThrow(()->new CustomException("댓글을 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+        Comment comment = commentRepository.findById(comment_id).orElseThrow(() -> new CustomException("댓글을 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
 
-        if(!username.equals(comment.getUser().getUsername())){
+        if (!username.equals(comment.getUser().getUsername())) {
             throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
         }
 

@@ -33,8 +33,8 @@ public class BoardService {
 
 
     //글등록
-    public BoardDTO createBoard(BoardCreateFormDTO boardCreateFormDTO, String token){
-        if(!jwtProvider.validateToken(token)){
+    public BoardDTO createBoard(BoardCreateFormDTO boardCreateFormDTO, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
         String username = jwtProvider.getUsername(token);
@@ -55,9 +55,9 @@ public class BoardService {
         boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
         boardDTO.setCreateAt(board.getCreateAt());
         boardDTO.setContent(board.getContent());
-        if(board.getCommentList() == null){
+        if (board.getCommentList() == null) {
             boardDTO.setComment_count(0);
-        }else {
+        } else {
             boardDTO.setComment_count(board.getCommentList().size());
         }
 
@@ -65,8 +65,8 @@ public class BoardService {
     }
 
     //글정보
-    public BoardDTO getBoard(Long id){
-        Board board = boardRepository.findById(id).orElseThrow(()->new CustomException("글정보를 찾을 없습니다!", HttpStatus.NOT_FOUND));
+    public BoardDTO getBoard(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(() -> new CustomException("글정보를 찾을 없습니다!", HttpStatus.NOT_FOUND));
         BoardDTO boardDTO = new BoardDTO();
         boardDTO.setNickname(board.getUser().getNickname());
         boardDTO.setTitle(board.getTitle());
@@ -74,9 +74,9 @@ public class BoardService {
         boardDTO.setCreateAt(board.getCreateAt());
         boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
         List<Comment> comments = board.getCommentList();
-        if(comments == null){
+        if (comments == null) {
             boardDTO.setComment_count(0);
-        }else {
+        } else {
             boardDTO.setComment_count(board.getCommentList().size());
         }
         return boardDTO;
@@ -107,12 +107,11 @@ public class BoardService {
     }*/
 
     //유저아이디 조회 서비스
-    public Page<BoardDTO> getUserBoardPage(String token, String username, int page, int size){
-        if(!jwtProvider.validateToken(token)){
+    public Page<BoardDTO> getUserBoardPage(String token, String username, int page, int size) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
         Pageable pageable = PageRequest.of(page, size);
-
 
 
         User user = userRepository.findByUsername(username);
@@ -125,9 +124,9 @@ public class BoardService {
             boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
             boardDTO.setCreateAt(board.getCreateAt());
             List<Comment> comments = board.getCommentList();
-            if(comments == null){
+            if (comments == null) {
                 boardDTO.setComment_count(0);
-            }else {
+            } else {
                 boardDTO.setComment_count(board.getCommentList().size());
             }
             return boardDTO;
@@ -136,8 +135,9 @@ public class BoardService {
         return boardDTOS;
 
     }
+
     //카테고리별 분류
-    public Page<BoardDTO> getCategoryBoardPage(Category category, int page, int size){
+    public Page<BoardDTO> getCategoryBoardPage(Category category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         //Category categoryEnum = Category.valueOf(category);
         Page<Board> boards = boardRepository.findByCategory(category, pageable);
@@ -149,9 +149,9 @@ public class BoardService {
             boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
             boardDTO.setCreateAt(board.getCreateAt());
             List<Comment> comments = board.getCommentList();
-            if(comments == null){
+            if (comments == null) {
                 boardDTO.setComment_count(0);
-            }else {
+            } else {
                 boardDTO.setComment_count(board.getCommentList().size());
             }
             return boardDTO;
@@ -160,24 +160,25 @@ public class BoardService {
 
         return boardDTOS;
     }
+
     //글수정
-    public BoardDTO updateBoard(Long id ,BoardUpdateFormDTO boardUpdateFormDTO, String token){
-        if(!jwtProvider.validateToken(token)){
+    public BoardDTO updateBoard(Long id, BoardUpdateFormDTO boardUpdateFormDTO, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
 
         String username = jwtProvider.getUsername(token);
         String currentUser = ((UserDetails) jwtProvider.getAuthentication(token).getPrincipal()).getUsername();
 
-        if(!currentUser.equals(username)){
+        if (!currentUser.equals(username)) {
             throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
         }
 
         User user = userRepository.findByUsername(username);
         Board board = boardRepository.findById(id)
-                .orElseThrow(()-> new CustomException("글정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("글정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
 
-        if(!user.getUsername().equals(board.getUser().getUsername())){
+        if (!user.getUsername().equals(board.getUser().getUsername())) {
             throw new CustomException("회원정보가 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
 
@@ -194,23 +195,24 @@ public class BoardService {
         boardDTO.setContent(board.getContent());
         boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
         boardDTO.setCreateAt(board.getCreateAt());
-        if(board.getCommentList() == null){
+        if (board.getCommentList() == null) {
             boardDTO.setComment_count(0);
-        }else {
+        } else {
             boardDTO.setComment_count(board.getCommentList().size());
         }
 
         return boardDTO;
     }
+
     //글삭제
-    public boolean deleteBoard(Long id, String token){
-        if(!jwtProvider.validateToken(token)){
+    public boolean deleteBoard(Long id, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
-        Board board = boardRepository.findById(id).orElseThrow(()-> new CustomException("글정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+        Board board = boardRepository.findById(id).orElseThrow(() -> new CustomException("글정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
         String username = jwtProvider.getUsername(token);
         User user = userRepository.findByUsername(username);
-        if(!user.getUsername().equals(board.getUser().getUsername())){
+        if (!user.getUsername().equals(board.getUser().getUsername())) {
             throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
         }
         boardRepository.delete(board);
