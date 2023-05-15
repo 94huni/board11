@@ -139,14 +139,8 @@ public class UserService {
         }
 
         String username = jwtProvider.getUsername(token);
-        String currentUser = ((UserDetails) jwtProvider.getAuthentication(token).getPrincipal()).getUsername();
-
-        if (!currentUser.equals(username)) {
-            throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
-        }
 
         User user = userRepository.findByUsername(username);
-
 
         if (userUpdateFormDTO.getPassword() != null) {
             if (userUpdateFormDTO.getPassword().equals(userUpdateFormDTO.getPassword2())) {
