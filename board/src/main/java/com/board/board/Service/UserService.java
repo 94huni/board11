@@ -37,22 +37,22 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
 
     //로그인시 jwt 반환
-    public String signIn(UserLoginFormDTO userLoginFormDTO){
+    public String signIn(UserLoginFormDTO userLoginFormDTO) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginFormDTO.getUsername(), userLoginFormDTO.getPassword()));
             return jwtProvider.createToken(userLoginFormDTO.getUsername(), userRepository.findByUsername(userLoginFormDTO.getUsername()).getUserRoles());
-        }catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             throw new CustomException("사용자이름 또는 비밀번호가 틀렸습니다!", HttpStatus.UNAUTHORIZED);
         }
     }
 
     //회원가입시 jwt 반환
-    public String signUp(UserSignUpFormDTO userSignUpFormDTO){
-        if(userRepository.existsByUsername(userSignUpFormDTO.getUsername())){
+    public String signUp(UserSignUpFormDTO userSignUpFormDTO) {
+        if (userRepository.existsByUsername(userSignUpFormDTO.getUsername())) {
             throw new CustomException("중복된 아이디가 있습니다!", HttpStatus.CONFLICT);
         }
 
-        if(!userSignUpFormDTO.getPassword().equals(userSignUpFormDTO.getPassword2())){
+        if (!userSignUpFormDTO.getPassword().equals(userSignUpFormDTO.getPassword2())) {
             throw new CustomException("비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST);
         }
         User user = new User();
@@ -67,12 +67,12 @@ public class UserService {
     }
 
     //관리자게정 생성
-    public String signUpAdmin(UserSignUpFormDTO userSignUpFormDTO){
-        if(userRepository.existsByUsername(userSignUpFormDTO.getUsername())){
+    public String signUpAdmin(UserSignUpFormDTO userSignUpFormDTO) {
+        if (userRepository.existsByUsername(userSignUpFormDTO.getUsername())) {
             throw new CustomException("중복된 아이디가 있습니다!", HttpStatus.CONFLICT);
         }
 
-        if(!userSignUpFormDTO.getPassword().equals(userSignUpFormDTO.getPassword2())){
+        if (!userSignUpFormDTO.getPassword().equals(userSignUpFormDTO.getPassword2())) {
             throw new CustomException("비밀번호가 다릅니다.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         User user = new User();
@@ -88,7 +88,7 @@ public class UserService {
 
 
     //jwt 사용자 정보
-    public UserDTO getCurrent(String token){
+    public UserDTO getCurrent(String token) {
         String username = jwtProvider.getUsername(token);
         User user = userRepository.findByUsername(username);
         UserDTO userDTO = new UserDTO();
@@ -103,13 +103,13 @@ public class UserService {
     }
 
     //회원정보 조회
-    public UserDTO getUser(Long id, String token){
+    public UserDTO getUser(Long id, String token) {
 
-        if(!jwtProvider.validateToken(token)){
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userRepository.findById(id).orElseThrow(()->new CustomException("정보를 찾을수 없습니다!", HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException("정보를 찾을수 없습니다!", HttpStatus.NOT_FOUND));
 
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(user.getUsername());
@@ -117,15 +117,15 @@ public class UserService {
         userDTO.setUserRoles(user.getUserRoles());
         userDTO.setEmail(user.getEmail());
         userDTO.setCreateAt(user.getCreateAt());
-        if(user.getBoardList() != null){
+        if (user.getBoardList() != null) {
             userDTO.setBoard_count(user.getBoardList().size());
-        }else {
+        } else {
             userDTO.setBoard_count(0);
         }
 
         if (user.getCommentList() != null) {
             userDTO.setComment_count(user.getCommentList().size());
-        }else {
+        } else {
             userDTO.setComment_count(0);
         }
 
@@ -133,31 +133,31 @@ public class UserService {
     }
 
     //정보수정
-    public UserDTO updateUser(UserUpdateFormDTO userUpdateFormDTO, String token){
-        if(!jwtProvider.validateToken(token)){
+    public UserDTO updateUser(UserUpdateFormDTO userUpdateFormDTO, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
 
         String username = jwtProvider.getUsername(token);
         String currentUser = ((UserDetails) jwtProvider.getAuthentication(token).getPrincipal()).getUsername();
 
-        if(!currentUser.equals(username)){
+        if (!currentUser.equals(username)) {
             throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
         }
 
         User user = userRepository.findByUsername(username);
 
 
-        if(userUpdateFormDTO.getPassword() != null){
-            if(userUpdateFormDTO.getPassword().equals(userUpdateFormDTO.getPassword2())){
+        if (userUpdateFormDTO.getPassword() != null) {
+            if (userUpdateFormDTO.getPassword().equals(userUpdateFormDTO.getPassword2())) {
                 user.setPassword(bCryptPasswordEncoder.encode(userUpdateFormDTO.getPassword()));
                 user.setEmail(userUpdateFormDTO.getEmail());
                 user.setNickname(user.getNickname());
                 userRepository.save(user);
-            }else {
+            } else {
                 throw new CustomException("비밀번호가 다릅니다!", HttpStatus.BAD_REQUEST);
             }
-        }else {
+        } else {
             user.setNickname(userUpdateFormDTO.getNickname());
             user.setEmail(userUpdateFormDTO.getEmail());
             userRepository.save(user);
@@ -173,8 +173,8 @@ public class UserService {
 
 
     //전체 회원 조회
-    public Page<UserDTO> getAllUserPage(int page, int size, String search, String token){
-        if(!jwtProvider.validateToken(token)){
+    public Page<UserDTO> getAllUserPage(int page, int size, String search, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
 
@@ -182,7 +182,7 @@ public class UserService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<User> userPage = userRepository.findByUsernameContaining(search, pageable);
 
-        if(userPage == null){
+        if (userPage == null) {
             throw new CustomException("검색결과가 없습니다!", HttpStatus.NOT_FOUND);
         }
 
@@ -193,15 +193,15 @@ public class UserService {
             userDto.setNickname(user.getNickname());
             userDto.setCreateAt(user.getCreateAt());
             userDto.setUserRoles(user.getUserRoles());
-            if(user.getBoardList() != null){
+            if (user.getBoardList() != null) {
                 userDto.setBoard_count(user.getBoardList().size());
-            }else {
+            } else {
                 userDto.setBoard_count(0);
             }
 
-            if(user.getCommentList() != null){
+            if (user.getCommentList() != null) {
                 userDto.setComment_count(user.getCommentList().size());
-            }else {
+            } else {
                 userDto.setComment_count(0);
             }
 
@@ -210,14 +210,14 @@ public class UserService {
         return userDTOPage;
     }
 
-    public boolean deleteUser(Long id, String token){
-        if(!jwtProvider.validateToken(token)){
+    public boolean deleteUser(Long id, String token) {
+        if (!jwtProvider.validateToken(token)) {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
-        User user = userRepository.findById(id).orElseThrow(()->new CustomException("회원정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException("회원정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
         String username = jwtProvider.getUsername(token);
 
-        if(!user.getUsername().equals(username)){
+        if (!user.getUsername().equals(username)) {
             throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
         }
         userRepository.delete(user);
