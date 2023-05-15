@@ -5,6 +5,7 @@ import com.board.board.DTO.BoardCreateFormDTO;
 import com.board.board.DTO.BoardDTO;
 import com.board.board.Entity.Category;
 import com.board.board.Entity.User;
+import com.board.board.Exception.CustomException;
 import com.board.board.Repository.BoardRepository;
 import com.board.board.Repository.UserRepository;
 import com.board.board.Service.BoardService;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -52,5 +54,21 @@ public class BoardServiceTest {
         assertEquals(result.getTitle(), "Test_Title");
         assertEquals(result.getContent(), "Test_Content");
 
+    }
+
+    @Test
+    public void createBoard_InvalidToken() {
+        String token = "token";
+
+        BoardCreateFormDTO boardCreateFormDTO = new BoardCreateFormDTO();
+
+        when(jwtProvider.validateToken(token)).thenReturn(false);
+
+        CustomException exception = assertThrows(CustomException.class, ()->{
+           boardService.createBoard(boardCreateFormDTO, token);
+        });
+
+        assertEquals("만료되었거나 토큰이 잘못됐습니다!", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
     }
 }
