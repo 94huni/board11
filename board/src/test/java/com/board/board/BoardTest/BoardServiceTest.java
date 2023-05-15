@@ -3,6 +3,7 @@ package com.board.board.BoardTest;
 import com.board.board.Config.Jwt.JwtProvider;
 import com.board.board.DTO.BoardCreateFormDTO;
 import com.board.board.DTO.BoardDTO;
+import com.board.board.Entity.Board;
 import com.board.board.Entity.Category;
 import com.board.board.Entity.User;
 import com.board.board.Exception.CustomException;
@@ -53,6 +54,8 @@ public class BoardServiceTest {
         assertEquals(result.getNickname(), "TestUser");
         assertEquals(result.getTitle(), "Test_Title");
         assertEquals(result.getContent(), "Test_Content");
+
+        verify(boardRepository).save(any(Board.class));
 
     }
 
