@@ -36,7 +36,7 @@ public class UserSignInTest {
     private UserService userService;
 
     @Test
-    public void signIn_Successful(){
+    public void signIn_Successful() {
         UserLoginFormDTO userLoginFormDTO = new UserLoginFormDTO();
         userLoginFormDTO.setUsername("TestUser");
         userLoginFormDTO.setPassword("1234");
@@ -59,7 +59,7 @@ public class UserSignInTest {
     }
 
     @Test
-    public void signIn_InvalidPassword(){
+    public void signIn_InvalidPassword() {
         UserLoginFormDTO userLoginFormDTO = new UserLoginFormDTO();
         userLoginFormDTO.setUsername("TestUser");
         userLoginFormDTO.setPassword("1234");
@@ -83,7 +83,7 @@ public class UserSignInTest {
     }
 
     @Test
-    public void signIn_InvalidUsername(){
+    public void signIn_InvalidUsername() {
         UserLoginFormDTO userLoginFormDTO = new UserLoginFormDTO();
         userLoginFormDTO.setUsername("TestUser");
         userLoginFormDTO.setPassword("1234");
