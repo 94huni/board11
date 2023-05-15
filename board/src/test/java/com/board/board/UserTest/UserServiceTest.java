@@ -296,6 +296,33 @@ public class UserServiceTest {
     }
 
     @Test
+    public void updateUser_InvalidPassword() {
+        String token = "token";
+        UserUpdateFormDTO userUpdateFormDTO = new UserUpdateFormDTO();
+        userUpdateFormDTO.setNickname("new_nickname");
+        userUpdateFormDTO.setEmail("new_email@test.com");
+        userUpdateFormDTO.setPassword("new_password");
+        userUpdateFormDTO.setPassword2("new_password1");
+
+        User user = new User();
+        user.setUsername("username");
+        user.setEmail("old_email@test.com");
+        user.setNickname("old_nickname");
+        user.setPassword("old_password");
+
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(jwtProvider.getUsername(token)).thenReturn(user.getUsername());
+        when(userRepository.findByUsername("username")).thenReturn(user);
+
+        CustomException exception = assertThrows(CustomException.class, () -> {
+            userService.updateUser(userUpdateFormDTO, token);
+        });
+
+        assertEquals("비밀번호가 다릅니다!", exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
+    }
+
+    @Test
     public void deleteUser_SuccessfulTest() {
         String token = "token";
 
