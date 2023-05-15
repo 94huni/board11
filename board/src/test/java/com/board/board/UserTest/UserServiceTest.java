@@ -241,4 +241,46 @@ public class UserServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
     }
 
+    @Test
+    public void deleteUser_SuccessfulTest() {
+        String token = "token";
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(jwtProvider.getUsername(token)).thenReturn(user.getUsername());
+
+        boolean isDelete = userService.deleteUser(user.getId(), token);
+
+        assertTrue(isDelete);
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    public void deleteUser_AuthenticationFail() {
+        String token = "token";
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("TestUser");
+
+        User falseUser = new User();
+        falseUser.setId(2L);
+        falseUser.setUsername("Test");
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(jwtProvider.getUsername(token)).thenReturn(falseUser.getUsername());
+
+        CustomException exception = assertThrows(CustomException.class, ()-> {
+            userService.deleteUser(user.getId(), token);
+        });
+
+        assertEquals("권한이 없습니다!",exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+    }
+
 }
