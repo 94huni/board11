@@ -2,6 +2,7 @@ package com.board.board.UserTest;
 
 import com.board.board.Config.Jwt.JwtProvider;
 import com.board.board.DTO.UserDTO;
+import com.board.board.DTO.UserUpdateFormDTO;
 import com.board.board.Entity.Board;
 import com.board.board.Entity.Comment;
 import com.board.board.Entity.User;
@@ -233,12 +234,37 @@ public class UserServiceTest {
         Page<User> userPage = new PageImpl<>(users, pageable, 5);
         when(userRepository.findByUsernameContaining(search, pageable)).thenReturn(null);
 
-        CustomException exception = assertThrows(CustomException.class, ()->{
+        CustomException exception = assertThrows(CustomException.class, () -> {
             userService.getAllUserPage(page, size, search, token);
         });
 
         assertEquals("검색결과가 없습니다!", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    public void updateUser_PasswordNull_SuccessfulTest() {
+        String token = "token";
+        UserUpdateFormDTO userUpdateFormDTO = new UserUpdateFormDTO();
+        userUpdateFormDTO.setNickname("new_nickname");
+        userUpdateFormDTO.setEmail("new_email@test.com");
+
+        User user = new User();
+        user.setUsername("username");
+        user.setEmail("old_email@test.com");
+        user.setNickname("old_nickname");
+
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(jwtProvider.getUsername(token)).thenReturn(user.getUsername());
+        when(userRepository.findByUsername("username")).thenReturn(user);
+
+        UserDTO result = userService.updateUser(userUpdateFormDTO, token);
+
+        assertEquals("username", result.getUsername());
+        assertEquals("new_nickname", result.getNickname());
+        assertEquals("new_email@test.com", result.getEmail());
+
+        verify(userRepository).save(user);
     }
 
     @Test
@@ -275,11 +301,11 @@ public class UserServiceTest {
         when(jwtProvider.validateToken(token)).thenReturn(true);
         when(jwtProvider.getUsername(token)).thenReturn(falseUser.getUsername());
 
-        CustomException exception = assertThrows(CustomException.class, ()-> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             userService.deleteUser(user.getId(), token);
         });
 
-        assertEquals("권한이 없습니다!",exception.getMessage());
+        assertEquals("권한이 없습니다!", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
     }
 
