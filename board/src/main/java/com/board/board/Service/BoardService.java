@@ -38,11 +38,6 @@ public class BoardService {
             throw new CustomException("만료되었거나 토큰이 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
         }
         String username = jwtProvider.getUsername(token);
-        String currentUser = ((UserDetails) jwtProvider.getAuthentication(token).getPrincipal()).getUsername();
-
-        if(!currentUser.equals(username)){
-            throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
-        }
 
         User user = userRepository.findByUsername(username);
         Board board = new Board();
