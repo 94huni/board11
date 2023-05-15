@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
 public class BoardServiceTest {
@@ -73,5 +74,39 @@ public class BoardServiceTest {
 
         assertEquals("만료되었거나 토큰이 잘못됐습니다!", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+    }
+
+    @Test
+    public void getBoard_Successful() {
+        User user = new User();
+        user.setNickname("Test_Nickname");
+        Board board = new Board();
+        board.setUser(user);
+        board.setTitle("Test");
+        board.setCategory(List.of(Category.FREE));
+        board.setContent("Test_Content");
+        board.setId(1L);
+
+        when(boardRepository.findById(board.getId())).thenReturn(Optional.of(board));
+
+        BoardDTO boardDTO = boardService.getBoard(board.getId());
+
+        assertEquals("Test_Nickname", boardDTO.getNickname());
+        assertEquals("Test", boardDTO.getTitle());
+        assertEquals("Test_Content", boardDTO.getContent());
+    }
+
+    @Test
+    public void getBoard_NotFoundBoard() {
+        Long id = 1L;
+
+        when(boardRepository.findById(id)).thenReturn(Optional.empty());
+
+        CustomException exception = assertThrows(CustomException.class, ()->{
+            boardService.getBoard(id);
+        });
+
+        assertEquals("글정보를 찾을 없습니다!", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
     }
 }
