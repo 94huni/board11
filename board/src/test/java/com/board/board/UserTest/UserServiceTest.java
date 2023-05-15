@@ -268,6 +268,34 @@ public class UserServiceTest {
     }
 
     @Test
+    public void updateUser_PasswordNotNull_SuccessfulTest() {
+        String token = "token";
+        UserUpdateFormDTO userUpdateFormDTO = new UserUpdateFormDTO();
+        userUpdateFormDTO.setNickname("new_nickname");
+        userUpdateFormDTO.setEmail("new_email@test.com");
+        userUpdateFormDTO.setPassword("new_password");
+        userUpdateFormDTO.setPassword2("new_password");
+
+        User user = new User();
+        user.setUsername("username");
+        user.setEmail("old_email@test.com");
+        user.setNickname("old_nickname");
+        user.setPassword("old_password");
+
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(jwtProvider.getUsername(token)).thenReturn(user.getUsername());
+        when(userRepository.findByUsername("username")).thenReturn(user);
+
+        UserDTO result = userService.updateUser(userUpdateFormDTO, token);
+
+        assertEquals("username", result.getUsername());
+        assertEquals("new_nickname", result.getNickname());
+        assertEquals("new_email@test.com", result.getEmail());
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
     public void deleteUser_SuccessfulTest() {
         String token = "token";
 
