@@ -146,7 +146,7 @@ public class UserService {
             if (userUpdateFormDTO.getPassword().equals(userUpdateFormDTO.getPassword2())) {
                 user.setPassword(bCryptPasswordEncoder.encode(userUpdateFormDTO.getPassword()));
                 user.setEmail(userUpdateFormDTO.getEmail());
-                user.setNickname(user.getNickname());
+                user.setNickname(userUpdateFormDTO.getNickname());
                 userRepository.save(user);
             } else {
                 throw new CustomException("비밀번호가 다릅니다!", HttpStatus.BAD_REQUEST);
