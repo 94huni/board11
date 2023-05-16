@@ -6,6 +6,7 @@ import com.board.board.DTO.BoardDTO;
 import com.board.board.Entity.Board;
 import com.board.board.Entity.Category;
 import com.board.board.Entity.User;
+import com.board.board.Entity.UserRole;
 import com.board.board.Exception.CustomException;
 import com.board.board.Repository.BoardRepository;
 import com.board.board.Repository.UserRepository;
@@ -14,11 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,5 +114,49 @@ public class BoardServiceTest {
 
         assertEquals("글정보를 찾을 없습니다!", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    public void getBoardPageByCategory_Successful() {
+        int page = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+        Category category = Category.FREE;
+
+        List<User> users = new ArrayList<>();
+        for (int i=0; i<5; i++){
+            User user = new User();
+            user.setId((long) i);
+            user.setEmail("TestEmail"+i);
+            user.setPassword("1234");
+            user.setNickname("TestNickname"+i);
+            user.setUsername("TestUsername"+i);
+            user.setUserRoles(List.of(UserRole.ROLE_USER));
+            users.add(user);
+        }
+
+        List<Board> boards = new ArrayList<>();
+        for(int i=0; i<5; i++){
+            Board board = new Board();
+            board.setId((long) i);
+            board.setTitle("TestTitle"+i);
+            board.setContent("TestContent"+i);
+            board.setUser(users.get(i));
+            board.setCategory(List.of(Category.FREE));
+            boards.add(board);
+        }
+
+        Page<Board> boardPage = new PageImpl<>(boards, pageable, 5);
+
+        when(boardRepository.findByCategory(category, pageable)).thenReturn(boardPage);
+
+        Page<BoardDTO> resultBoard = boardService.getCategoryBoardPage(category, page, size);
+        List<BoardDTO> result = resultBoard.getContent();
+        BoardDTO resultPage = result.get(0);
+
+        assertEquals("TestNickname0", resultPage.getNickname());
+        assertEquals("TestContent0", resultPage.getContent());
+        assertEquals("TestTitle0", resultPage.getTitle());
+
     }
 }
