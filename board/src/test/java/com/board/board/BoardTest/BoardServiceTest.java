@@ -175,4 +175,45 @@ public class BoardServiceTest {
         assertEquals(exception.getHttpStatus(), HttpStatus.BAD_REQUEST);
         assertEquals(exception.getMessage(), "카테고리를 설정하지 않았습니다!");
     }
+
+    @Test
+    public void getBoardPageByUser_Successful() {
+        int page = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        String token = "Token";
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("TestUser");
+        user.setEmail("testUser@test.com");
+        user.setNickname("TestNickname");
+        user.setPassword("1234");
+
+        List<Board> boards = new ArrayList<>();
+        for(int i=0; i<5; i++){
+            Board board = new Board();
+            board.setId((long) i);
+            board.setTitle("TestTitle"+i);
+            board.setContent("TestContent"+i);
+            board.setUser(user);
+            board.setCategory(List.of(Category.FREE));
+            boards.add(board);
+        }
+
+        Page<Board> boardPage = new PageImpl<>(boards, pageable, 5);
+
+        when(boardRepository.findByUser(pageable, user)).thenReturn(boardPage);
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+        Page<BoardDTO> boardDTOS = boardService.getUserBoardPage(token, user.getUsername(), page, size);
+        List<BoardDTO> resultPage = boardDTOS.getContent();
+        BoardDTO boardDTO = resultPage.get(0);
+
+        assertEquals("TestNickname", boardDTO.getNickname());
+        assertEquals("TestContent0", boardDTO.getContent());
+        assertEquals("TestTitle0", boardDTO.getTitle());
+    }
 }
