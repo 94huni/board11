@@ -216,4 +216,38 @@ public class BoardServiceTest {
         assertEquals("TestContent0", boardDTO.getContent());
         assertEquals("TestTitle0", boardDTO.getTitle());
     }
+
+    @Test
+    public void getBoardPageByUser_UserNotFound() {
+        int page = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("TestName");
+        user.setNickname("Test");
+        user.setEmail("test@test.com");
+
+        String token = "token";
+
+        List<Board> boards = new ArrayList<>();
+        Board board = new Board();
+        board.setUser(user);
+        board.setTitle("Title");
+        board.setContent("Content");
+        boards.add(board);
+        Page<Board> boardPage = new PageImpl<>(boards, pageable, 1);
+
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(null);
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(boardRepository.findByUser(pageable, user)).thenReturn(boardPage);
+
+        CustomException exception = assertThrows(CustomException.class, ()->{
+            boardService.getUserBoardPage(token, user.getUsername(), page, size);
+        });
+
+        assertEquals("유저정보를 찾을 수 없습니다!", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
 }
