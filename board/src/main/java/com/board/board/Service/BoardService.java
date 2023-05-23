@@ -118,6 +118,12 @@ public class BoardService {
         Page<Board> boards = boardRepository.findByUser(pageable, user);
         Page<BoardDTO> boardDTOS = boards.map(board -> {
             BoardDTO boardDTO = new BoardDTO();
+            if (board == null){
+                throw new CustomException("게시글 정보가 없습니다!", HttpStatus.NOT_FOUND);
+            }
+            if (board.getUser() == null) {
+                throw new CustomException("게시판정보나 유저정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND);
+            }
             boardDTO.setNickname(board.getUser().getNickname());
             boardDTO.setTitle(board.getTitle());
             boardDTO.setContent(board.getContent());
