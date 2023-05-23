@@ -250,4 +250,30 @@ public class BoardServiceTest {
         assertEquals("유저정보를 찾을 수 없습니다!", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
     }
+
+    @Test
+    public void getBoardPageByUser_BoardNotFound() {
+        int page = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("TestName");
+        user.setNickname("Test");
+        user.setEmail("test@test.com");
+
+        String token = "token";
+
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(boardRepository.findByUser(pageable, user)).thenReturn(null);
+
+        CustomException exception = assertThrows(CustomException.class, ()-> {
+            boardService.getUserBoardPage(token, user.getUsername(), page, size);
+        });
+
+        assertEquals("게시글 정보를 찾을 수 없습니다!", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
 }
