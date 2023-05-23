@@ -161,7 +161,7 @@ public class BoardServiceTest {
     }
 
     @Test
-    public void getBoardPageByCategory_NotFoundCategory() {
+    public void getBoardPageByCategory_BadRequestCategory() {
         int size = 10;
         int page = 0;
         Pageable pageable = PageRequest.of(page, size);
