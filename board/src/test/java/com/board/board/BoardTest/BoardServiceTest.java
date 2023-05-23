@@ -159,4 +159,20 @@ public class BoardServiceTest {
         assertEquals("TestTitle0", resultPage.getTitle());
 
     }
+
+    @Test
+    public void getBoardPageByCategory_NotFoundCategory() {
+        int size = 10;
+        int page = 0;
+        Pageable pageable = PageRequest.of(page, size);
+
+        when(boardRepository.findByCategory(null, pageable)).thenReturn(null);
+
+        CustomException exception = assertThrows(CustomException.class, ()->{
+            boardService.getCategoryBoardPage(null,page,size);
+        });
+
+        assertEquals(exception.getHttpStatus(), HttpStatus.BAD_REQUEST);
+        assertEquals(exception.getMessage(), "카테고리를 설정하지 않았습니다!");
+    }
 }
