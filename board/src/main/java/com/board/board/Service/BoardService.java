@@ -140,6 +140,11 @@ public class BoardService {
     public Page<BoardDTO> getCategoryBoardPage(Category category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         //Category categoryEnum = Category.valueOf(category);
+
+        if (category == null) {
+            throw new CustomException("카테고리를 설정하지 않았습니다!", HttpStatus.BAD_REQUEST);
+        }
+
         Page<Board> boards = boardRepository.findByCategory(category, pageable);
         Page<BoardDTO> boardDTOS = boards.map(board -> {
             BoardDTO boardDTO = new BoardDTO();
