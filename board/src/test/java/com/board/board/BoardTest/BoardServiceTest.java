@@ -309,4 +309,27 @@ public class BoardServiceTest {
         assertEquals("UpdateTitle", boardDTO.getTitle());
         assertEquals("[GAME]", boardDTO.getCategory().toString());
     }
+
+    @Test
+    public void updateBoard_NotFoundBoard() {
+        String token = "token";
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("testEmail@test.com");
+        user.setNickname("TestNickname");
+        user.setUsername("testUser");
+
+        BoardUpdateFormDTO boardUpdateFormDTO = new BoardUpdateFormDTO();
+
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(userRepository.findByUsername(jwtProvider.getUsername(token))).thenReturn(user);
+        when(boardRepository.findById(3L)).thenReturn(null);
+
+        CustomException exception = assertThrows(CustomException.class, ()-> {
+           boardService.updateBoard(1L, boardUpdateFormDTO, token);
+        });
+
+        assertEquals(exception.getMessage(), "글정보를 찾을 수 없습니다!");
+        assertEquals(exception.getHttpStatus(),HttpStatus.NOT_FOUND);
+    }
 }
