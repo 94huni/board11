@@ -394,4 +394,37 @@ public class BoardServiceTest {
         boolean isDelete = boardService.deleteBoard(board.getId(), token);
         assertTrue(isDelete);
     }
+
+    @Test
+    public void deleteBoard_InvalidUser() {
+        String token = "token";
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("TestUser");
+        user.setNickname("Test_Nickname");
+        user.setEmail("testUser@test.com");
+
+        User testUser = new User();
+        user.setId(3L);
+        user.setUsername("DeleteTest");
+
+        Board board = new Board();
+        board.setUser(testUser);
+        board.setTitle("Test");
+        board.setCategory(List.of(Category.FREE));
+        board.setContent("Test_Content");
+        board.setId(1L);
+
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(userRepository.findByUsername(jwtProvider.getUsername(token))).thenReturn(user);
+        when(boardRepository.findById(board.getId())).thenReturn(Optional.of(board));
+
+        CustomException exception = assertThrows(CustomException.class, ()->{
+            boardService.deleteBoard(board.getId(), token);
+        });
+
+        assertEquals("권한이 없습니다!", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+    }
 }
