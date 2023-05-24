@@ -191,7 +191,7 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException("글정보를 찾을 수 없습니다!", HttpStatus.NOT_FOUND));
 
         if (!user.getUsername().equals(board.getUser().getUsername())) {
-            throw new CustomException("회원정보가 잘못됐습니다!", HttpStatus.UNAUTHORIZED);
+            throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
         }
 
 
