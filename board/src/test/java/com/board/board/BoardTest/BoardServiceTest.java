@@ -427,4 +427,33 @@ public class BoardServiceTest {
         assertEquals("권한이 없습니다!", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
     }
+
+    @Test
+    public void deleteBoard_NotFoundBoard() {
+        String token = "token";
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("TestUser");
+        user.setNickname("Test_Nickname");
+        user.setEmail("testUser@test.com");
+
+        Board board = new Board();
+        board.setUser(user);
+        board.setTitle("Test");
+        board.setCategory(List.of(Category.FREE));
+        board.setContent("Test_Content");
+        board.setId(1L);
+
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(userRepository.findByUsername(jwtProvider.getUsername(token))).thenReturn(user);
+        when(boardRepository.findById(3L)).thenReturn(null);
+
+        CustomException exception = assertThrows(CustomException.class, ()->{
+            boardService.deleteBoard(board.getId(), token);
+        });
+
+        assertEquals("글정보를 찾을 수 없습니다!", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
 }
