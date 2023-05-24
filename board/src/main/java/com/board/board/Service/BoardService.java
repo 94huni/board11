@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -179,11 +180,11 @@ public class BoardService {
         }
 
         String username = jwtProvider.getUsername(token);
-        String currentUser = ((UserDetails) jwtProvider.getAuthentication(token).getPrincipal()).getUsername();
+/*        String currentUser = ((UserDetails) jwtProvider.getAuthentication(token).getPrincipal()).getUsername();
 
         if (!currentUser.equals(username)) {
             throw new CustomException("권한이 없습니다!", HttpStatus.UNAUTHORIZED);
-        }
+        }*/
 
         User user = userRepository.findByUsername(username);
         Board board = boardRepository.findById(id)
@@ -204,7 +205,12 @@ public class BoardService {
         boardDTO.setTitle(board.getTitle());
         boardDTO.setNickname(user.getNickname());
         boardDTO.setContent(board.getContent());
-        boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
+        boardDTO.setCategory(
+                board.getCategory() != null ?
+                        board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()) :
+                        Collections.emptyList()
+        );
+        //boardDTO.setCategory(board.getCategory().stream().map(Enum::toString).collect(Collectors.toList()));
         boardDTO.setCreateAt(board.getCreateAt());
         if (board.getCommentList() == null) {
             boardDTO.setComment_count(0);
