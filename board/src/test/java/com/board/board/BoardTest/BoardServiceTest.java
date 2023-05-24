@@ -332,4 +332,41 @@ public class BoardServiceTest {
         assertEquals(exception.getMessage(), "글정보를 찾을 수 없습니다!");
         assertEquals(exception.getHttpStatus(),HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    public void updateBoard_InvalidUser() {
+        String token = "token";
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("testEmail@test.com");
+        user.setNickname("TestNickname");
+        user.setUsername("testUser");
+
+        User testUser = new User();
+        testUser.setUsername("UpdateTest");
+        testUser.setId(2L);
+
+        Board board = new Board();
+        board.setId(1L);
+        board.setTitle("TestTitle");
+        board.setCategory(List.of(Category.FREE));
+        board.setUser(testUser);
+        board.setContent("TestContent");
+
+        BoardUpdateFormDTO boardUpdateFormDTO = new BoardUpdateFormDTO();
+        boardUpdateFormDTO.setTitle("UpdateTitle");
+        boardUpdateFormDTO.setContent("UpdateContent");
+        boardUpdateFormDTO.setCategory(List.of(Category.GAME));
+
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(userRepository.findByUsername(jwtProvider.getUsername(token))).thenReturn(user);
+        when(boardRepository.findById(board.getId())).thenReturn(Optional.of(board));
+
+        CustomException exception = assertThrows(CustomException.class, ()->{
+            boardService.updateBoard(board.getId(), boardUpdateFormDTO, token);
+        });
+
+        assertEquals("권한이 없습니다!", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+    }
 }
