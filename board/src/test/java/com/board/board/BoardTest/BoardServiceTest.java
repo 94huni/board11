@@ -3,6 +3,7 @@ package com.board.board.BoardTest;
 import com.board.board.Config.Jwt.JwtProvider;
 import com.board.board.DTO.BoardCreateFormDTO;
 import com.board.board.DTO.BoardDTO;
+import com.board.board.DTO.BoardUpdateFormDTO;
 import com.board.board.Entity.Board;
 import com.board.board.Entity.Category;
 import com.board.board.Entity.User;
@@ -275,5 +276,37 @@ public class BoardServiceTest {
 
         assertEquals("게시글 정보를 찾을 수 없습니다!", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    public void updateBoard_Successful() {
+        String token = "token";
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("testEmail@test.com");
+        user.setNickname("TestNickname");
+        user.setUsername("testUser");
+
+        Board board = new Board();
+        board.setId(1L);
+        board.setTitle("TestTitle");
+        board.setCategory(List.of(Category.FREE));
+        board.setUser(user);
+        board.setContent("TestContent");
+
+        BoardUpdateFormDTO boardUpdateFormDTO = new BoardUpdateFormDTO();
+        boardUpdateFormDTO.setTitle("UpdateTitle");
+        boardUpdateFormDTO.setContent("UpdateContent");
+        boardUpdateFormDTO.setCategory(List.of(Category.GAME));
+
+        when(jwtProvider.validateToken(token)).thenReturn(true);
+        when(userRepository.findByUsername(jwtProvider.getUsername(token))).thenReturn(user);
+        when(boardRepository.findById(board.getId())).thenReturn(Optional.of(board));
+
+        BoardDTO boardDTO = boardService.updateBoard(board.getId(), boardUpdateFormDTO, token);
+
+        assertEquals("UpdateContent", boardDTO.getContent());
+        assertEquals("UpdateTitle", boardDTO.getTitle());
+        assertEquals("[GAME]", boardDTO.getCategory().toString());
     }
 }
